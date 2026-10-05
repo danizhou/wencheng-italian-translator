@@ -2,11 +2,14 @@
   "name": "wencheng-italian-traslator",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest",
+    "build:data": "node scripts/build-data.ts",
+    "check:data": "node scripts/check-data.ts"
   },
   "dependencies": {
     "next": "16.3.8",
