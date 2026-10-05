@@ -267,7 +267,9 @@ on:
   pull_request:
   push:
     branches: [main]
-concurrency: { group: ci-${{ github.ref }}, cancel-in-progress: true }
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -292,7 +294,9 @@ name: Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-concurrency: { group: preview-${{ github.event.pull_request.number }}, cancel-in-progress: true }
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 permissions:
   contents: read
   pull-requests: write
@@ -348,7 +352,9 @@ name: Production
 on:
   push:
     branches: [main]
-concurrency: { group: production, cancel-in-progress: false }
+concurrency:
+  group: production
+  cancel-in-progress: false
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
