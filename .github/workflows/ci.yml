@@ -16,6 +16,6 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit
-      - run: npm test -- --run          # Vitest: ita, lookup, pipeline (LLM mockato)
-      - run: npm run check:data         # verifica che wencheng.json sia valido e > 3000 caratteri
-      - run: npm run build              # next build con output: 'export'
+      - run: npm test -- --run          # Vitest: ita, lookup, pipeline (LLM mocked)
+      - run: npm run check:data         # checks wencheng.json is valid and has > 3000 characters
+      - run: npm run build              # next build with output: 'export'

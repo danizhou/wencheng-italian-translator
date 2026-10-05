@@ -22,7 +22,7 @@ export interface LookupResult {
 /** "ȵi4" → { ipa: "ȵi4", tone: 4 } */
 export function parseIpa(ipa: string): Reading {
   const m = /^.+?([0-8])$/.exec(ipa.trim());
-  if (!m) throw new Error(`IPA senza tono finale (0–8): ${JSON.stringify(ipa)}`);
+  if (!m) throw new Error(`IPA without a trailing tone (0–8): ${JSON.stringify(ipa)}`);
   return { ipa: m[0], tone: Number(m[1]) };
 }
 

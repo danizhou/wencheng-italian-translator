@@ -1,10 +1,10 @@
 {
-  "_doc": "Regole IPA → lettere italiane, usate da src/lib/ita.ts. Ogni modifica va accompagnata da un test in tests/ita.test.ts. Le iniziali e le finali si confrontano dal match più lungo. 'soft': c/g dolci, si inserisce una i davanti a vocali non anteriori (a, o, u, ü). 'beforeFront': grafia davanti a e/è/i (es. c → ch).",
+  "_doc": "IPA → Italian spelling rules, used by src/lib/ita.ts. Every change needs a test in tests/ita.test.ts. Initials and finals are matched longest first. 'soft': soft c/g, an i is inserted before non-front vowels (a, o, u, ü). 'beforeFront': spelling before e/è/i (e.g. c → ch).",
   "ignoredPrefixes": [
-    { "ipa": "ʔ", "_note": "colpo di glottide: ʔȵi → gni, ʔŋ̍ → ng, ʔia → ia" }
+    { "ipa": "ʔ", "_note": "glottal stop: ʔȵi → gni, ʔŋ̍ → ng, ʔia → ia" }
   ],
   "initials": [
-    { "ipa": "ɦŋ̍", "ita": "ng", "_note": "nasale sillabica" },
+    { "ipa": "ɦŋ̍", "ita": "ng", "_note": "syllabic nasal" },
     { "ipa": "ŋ̍", "ita": "ng" },
     { "ipa": "tɕʰ", "ita": "c", "soft": true },
     { "ipa": "tɕ", "ita": "c", "soft": true },
@@ -14,14 +14,14 @@
     { "ipa": "tsʰ", "ita": "z" },
     { "ipa": "ts", "ita": "z" },
     { "ipa": "dz", "ita": "z" },
-    { "ipa": "pʰ", "ita": "p", "_note": "aspirazione ignorata" },
+    { "ipa": "pʰ", "ita": "p", "_note": "aspiration ignored" },
     { "ipa": "tʰ", "ita": "t" },
     { "ipa": "kʰ", "ita": "c", "beforeFront": "ch" },
     { "ipa": "k", "ita": "c", "beforeFront": "ch" },
     { "ipa": "ɡ", "ita": "g", "beforeFront": "gh" },
     { "ipa": "ȵ", "ita": "gn" },
     { "ipa": "ŋ", "ita": "ng" },
-    { "ipa": "ɦ", "ita": "", "_note": "h muta: metti \"h\" per scriverla" },
+    { "ipa": "ɦ", "ita": "", "_note": "silent h: set to \"h\" to write it" },
     { "ipa": "j", "ita": "i" }
   ],
   "finals": [
@@ -30,7 +30,7 @@
     { "ipa": "ɑ", "ita": "a" },
     { "ipa": "ɛ", "ita": "è" },
     { "ipa": "ə", "ita": "e" },
-    { "ipa": "ɜ", "ita": "e", "_note": "solo Wenzhou" },
+    { "ipa": "ɜ", "ita": "e", "_note": "Wenzhou only" },
     { "ipa": "ɤ", "ita": "e" },
     { "ipa": "ø", "ita": "eu" },
     { "ipa": "y", "ita": "ü" },

@@ -4,7 +4,7 @@ import { mergeSources, parseTsv } from "../scripts/build-data";
 describe("parseTsv", () => {
   const tsv = "#漢字\t音標\t解釋\n□\ttɕie5\t(用脚)抵住\n吃\ttɕʰi7\t\n吃\ttɕʰia7\t旧文读\n吃\ttɕʰi7\t\n";
 
-  it("salta header e □, tiene più letture e toglie i doppioni", () => {
+  it("skips the header and □, keeps multiple readings and drops duplicates", () => {
     const t = parseTsv(tsv);
     expect([...t.keys()]).toEqual(["吃"]);
     expect(t.get("吃")).toEqual([
@@ -13,13 +13,13 @@ describe("parseTsv", () => {
     ]);
   });
 
-  it("rifiuta righe senza tono", () => {
-    expect(() => parseTsv("你\tȵi\t\n")).toThrow(/tono/);
+  it("rejects rows without a tone", () => {
+    expect(() => parseTsv("你\tȵi\t\n")).toThrow(/tone/);
   });
 });
 
 describe("mergeSources", () => {
-  it("rispetta la priorità Daxue > Wencheng > Wenzhou", () => {
+  it("follows the Daxue > Wencheng > Wenzhou priority", () => {
     const merged = mergeSources({
       wenzhou: parseTsv("冇\tʔnau3\t\n飯\tva6\t\n"),
       wencheng: parseTsv("冇\tnau4\t\n飯\tvɔ6\t\n"),

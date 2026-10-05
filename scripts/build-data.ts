@@ -28,7 +28,7 @@ export function parseTsv(text: string): Map<string, Reading[]> {
     const [char, ipa, gloss] = line.split("\t");
     if (!char || char === NO_CHAR || !ipa) continue;
     const m = /^(.+?)([0-8])$/.exec(ipa.trim());
-    if (!m) throw new Error(`IPA senza tono: ${JSON.stringify(line)}`);
+    if (!m) throw new Error(`IPA without tone: ${JSON.stringify(line)}`);
     const readings = out.get(char) ?? [];
     if (readings.some((r) => r.ipa === m[0])) continue;
     const reading: Reading = { ipa: m[0], tone: Number(m[2]) };
@@ -81,14 +81,14 @@ function main() {
 
   const entries = Object.values(chars);
   const syllables = (rs: Reading[]) => rs.map((r) => r.ipa.slice(0, -1));
-  console.log(`Scritto ${OUT} (${(Buffer.byteLength(json) / 1024).toFixed(0)} KB), commit MCPDict ${commit.slice(0, 7)}`);
+  console.log(`Wrote ${OUT} (${(Buffer.byteLength(json) / 1024).toFixed(0)} KB), MCPDict commit ${commit.slice(0, 7)}`);
   for (const s of PRIORITY) {
     const table = tables[s];
     const distinct = new Set([...table.values()].flatMap(syllables));
     const primary = entries.filter((e) => e.source === s).length;
-    console.log(`  ${s.padEnd(9)} ${FILES[s].padEnd(9)} caratteri: ${String(table.size).padStart(5)}  primari: ${String(primary).padStart(5)}  sillabe distinte (senza tono): ${distinct.size}`);
+    console.log(`  ${s.padEnd(9)} ${FILES[s].padEnd(9)} chars: ${String(table.size).padStart(5)}  primary: ${String(primary).padStart(5)}  distinct syllables (toneless): ${distinct.size}`);
   }
-  console.log(`  totale caratteri: ${entries.length}`);
+  console.log(`  total chars: ${entries.length}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();

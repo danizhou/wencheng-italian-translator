@@ -1,8 +1,8 @@
 {
   "chars": {
-    "謝": { "ipa": "zi6", "note": "verificato" }
+    "謝": { "ipa": "zi6", "note": "verified" }
   },
   "phrases": {
-    "你飯吃過冇": { "ita": "gni va ci cu nau", "note": "frase tipica" }
+    "你飯吃過冇": { "ita": "gni va ci cu nau", "note": "typical phrase" }
   }
 }
