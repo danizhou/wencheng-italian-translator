@@ -244,6 +244,8 @@ Each phase ends with green tests and a demo.
 
 ## 10. CI/CD with GitHub Actions
 
+> **Update:** production hosting is **GitHub Pages**, deployed by `.github/workflows/pages.yml` on every push to `main` (site: `https://danizhou.github.io/wencheng-italian-traslator/`). The build gets the `/<repo>` prefix through `PAGES_BASE_PATH` → `basePath` in `next.config.ts`. The Vercel workflows below (per-PR previews and the `production.yml` deploy) are optional and only needed for PR previews.
+
 ### Choice
 
 - **Preview hosting:** Vercel, deployed from **GitHub Actions** with the Vercel CLI (`vercel pull` → `vercel build` → `vercel deploy --prebuilt`).
