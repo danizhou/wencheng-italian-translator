@@ -5,9 +5,20 @@ import "./globals.css";
 const googleSans = Google_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-google-sans", display: "swap" });
 const googleSansCode = Google_Sans_Code({ subsets: ["latin", "latin-ext"], variable: "--font-google-sans-code", display: "swap" });
 
+const TITLE = "Traduttore Wenzhouhua · 温州话";
+const DESCRIPTION = "Italiano → dialetti dell'area di Wenzhou (Wencheng, Qingtian), con la pronuncia scritta all'italiana";
+
+// Link previews need absolute URLs: the site's own address (SITE_URL overrides it, e.g. for a preview deploy)
+const SITE_URL = process.env.SITE_URL ?? "https://wenzhouhua.clicktoconnect.dev";
+
 export const metadata: Metadata = {
-  title: "Traduttore Wenzhouhua · 温州话",
-  description: "Italiano → dialetti dell'area di Wenzhou (Wencheng, Qingtian), con la pronuncia scritta all'italiana",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  applicationName: "Traduttore Wenzhouhua",
+  // The images come from the opengraph-image / twitter-image files in this folder (npm run build:icons)
+  openGraph: { title: TITLE, description: DESCRIPTION, siteName: "Traduttore Wenzhouhua", locale: "it_IT", type: "website", url: "/" },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
 
 export const viewport: Viewport = {

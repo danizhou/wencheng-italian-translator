@@ -1,5 +1,6 @@
 import { Translator } from "@/components/Translator";
 import { GITHUB_PROFILE, GITHUB_REPO } from "@/components/labels";
+import { Logo } from "@/components/Logo";
 
 function GitHubIcon() {
   return (
@@ -15,7 +16,7 @@ export default function Home() {
       <header className="bg-appbar text-white">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-3">
-            <span lang="zh-Hans" className="flex size-10 items-center justify-center rounded-xl bg-accent text-xl font-bold text-appbar">温</span>
+            <Logo className="size-11 shrink-0" />
             <div className="leading-tight">
               <h1 className="text-lg font-semibold">Traduttore Wenzhouhua <span lang="zh-Hans" className="font-normal text-accent">温州话</span></h1>
               <p className="text-xs text-white/70">Italiano → dialetti dell&apos;area di Wenzhou (Wencheng, Qingtian), con la pronuncia all&apos;italiana</p>
