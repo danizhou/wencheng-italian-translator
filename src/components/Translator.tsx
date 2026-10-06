@@ -225,8 +225,7 @@ export function Translator() {
                   <input type="checkbox" className="size-3.5 accent-[var(--primary)]" checked={slow} onChange={(e) => setSlow(e.target.checked)} />
                   Lento
                 </label>
-                <SpeakButton text={viLine} lang="vi" slow={slow} label="Ascolta" />
-                <SpeakButton text={ita} lang="it" slow={slow} label="Lettere" variant="secondary" />
+                <SpeakButton text={viLine} slow={slow} label="Ascolta" />
               </div>
             </div>
 
@@ -249,7 +248,7 @@ export function Translator() {
               {wenzhouCount > 0 && <li className="text-warn">Le sillabe evidenziate vengono dal dialetto di Wenzhou città, non di Wencheng.</li>}
               {missingCount > 0 && <li className="text-danger">I caratteri in rosso non sono in nessuna tabella.</li>}
               <li>Tocca una sillaba per vedere le pronunce alternative.</li>
-              <li>“Ascolta” usa una voce vietnamita che legge la pronuncia con i toni (il vietnamita ha molti suoni e toni simili al dialetto); “Lettere” una voce italiana che legge la trascrizione. Sono approssimazioni: nessuna delle due è un parlante di Wencheng.</li>
+              <li>“Ascolta” usa una voce vietnamita che legge la pronuncia con i toni: il vietnamita ha molti suoni e toni simili al dialetto, ma resta un&apos;approssimazione, non un parlante di Wencheng.</li>
               <SpeechNotice />
             </ul>
 

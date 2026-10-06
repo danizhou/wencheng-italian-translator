@@ -1,36 +1,17 @@
 /**
- * Reads the result aloud with the browser's own speech synthesis (Web Speech
- * API). No network, no key. Two voices:
- * - Vietnamese: reads the Vietnamese respelling of the IPA (src/lib/vi.ts),
- *   with tones. The closest available sound to Wencheng; still an approximation.
- * - Italian: reads the Italian spelling ("gni va ci cu nau").
+ * Reads the pronunciation aloud with the browser's own speech synthesis (Web
+ * Speech API): a Vietnamese voice reads the Vietnamese respelling of the IPA
+ * (src/lib/vi.ts), with tones. No network, no key. No voice speaks Wenchenghua;
+ * Vietnamese is the closest one phones ship with, still an approximation.
  */
 
-export type SpeechLang = "vi" | "it";
-
-const LANG_TAG: Record<SpeechLang, string> = { vi: "vi-VN", it: "it-IT" };
-
-/** Syllables an Italian voice would spell out letter by letter, and what to say instead. */
-const UNSPEAKABLE: Record<string, string> = { ng: "eng", z: "ze", s: "se" };
-
-/** One Italian syllable, made pronounceable for an Italian voice. */
-export function speakableSyllable(ita: string): string {
-  const syllable = ita.toLowerCase();
-  if (UNSPEAKABLE[syllable]) return UNSPEAKABLE[syllable];
-  // Italian has no ü: "iu" is the closest sound, without doubling an i before it
-  return syllable.replace(/i?ü/g, "iu");
-}
-
-/** A whole Italian line ("ng ciü meng la?") made pronounceable, punctuation kept. */
-export function speakableLine(line: string): string {
-  return line.replace(/[a-zèü]+/gi, speakableSyllable);
-}
+const LANG_TAG = "vi-VN";
 
 const normalize = (lang: string) => lang.toLowerCase().replace("_", "-");
 
-/** Best voice for the language (vi-VN / it-IT first, local voices first); null if there is none. */
-export function pickVoice<V extends { lang: string; localService?: boolean }>(voices: readonly V[], lang: SpeechLang): V | null {
-  const langRank = (tag: string): number => (tag === LANG_TAG[lang].toLowerCase() ? 0 : tag.startsWith(lang) ? 1 : Infinity);
+/** Best Vietnamese voice (vi-VN first, local voices first); null if there is none. */
+export function pickVoice<V extends { lang: string; localService?: boolean }>(voices: readonly V[]): V | null {
+  const langRank = (tag: string): number => (tag === "vi-vn" ? 0 : tag.startsWith("vi") ? 1 : Infinity);
   const rank = (v: V) => langRank(normalize(v.lang)) + (v.localService ? 0 : 0.5);
   const best = [...voices].sort((a, b) => rank(a) - rank(b))[0];
   return best && rank(best) !== Infinity ? best : null;
@@ -38,19 +19,16 @@ export function pickVoice<V extends { lang: string; localService?: boolean }>(vo
 
 export const isSpeechSupported = () => typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
-/**
- * Speaks the text; resolves when done or cancelled. Stops anything already playing.
- * Italian text is made pronounceable first; Vietnamese text is read as given.
- */
-export function speak(text: string, { lang = "it", rate = 0.9 }: { lang?: SpeechLang; rate?: number } = {}): Promise<void> {
+/** Speaks the Vietnamese text; resolves when done or cancelled. Stops anything already playing. */
+export function speak(text: string, { rate = 0.9 }: { rate?: number } = {}): Promise<void> {
   return new Promise((resolve) => {
     if (!isSpeechSupported() || !text.trim()) return resolve();
     const synth = window.speechSynthesis;
     synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(lang === "it" ? speakableLine(text) : text);
-    utterance.lang = LANG_TAG[lang];
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = LANG_TAG;
     utterance.rate = rate;
-    const voice = pickVoice(synth.getVoices(), lang);
+    const voice = pickVoice(synth.getVoices());
     if (voice) utterance.voice = voice;
     utterance.onend = () => resolve();
     utterance.onerror = () => resolve();
@@ -65,9 +43,9 @@ export function stopSpeaking() {
 /** For useSyncExternalStore. Voices load asynchronously. */
 export type SpeechStatus = "unsupported" | "no-voice" | "ready";
 
-export function getSpeechStatus(lang: SpeechLang): SpeechStatus {
+export function getSpeechStatus(): SpeechStatus {
   if (!isSpeechSupported()) return "unsupported";
-  return pickVoice(window.speechSynthesis.getVoices(), lang) ? "ready" : "no-voice";
+  return pickVoice(window.speechSynthesis.getVoices()) ? "ready" : "no-voice";
 }
 
 export function subscribeVoices(onChange: () => void): () => void {

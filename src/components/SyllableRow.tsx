@@ -76,8 +76,7 @@ function AltPanel({ token, onChoose, onClose }: { token: Token; onChoose: (alt: 
           </Chip>
         </div>
         <div className="flex items-center gap-1">
-          {vi && <SpeakButton text={vi} lang="vi" slow variant="compact" tag="VI" label="Ascolta con la voce vietnamita" />}
-          <SpeakButton text={token.ita} lang="it" slow variant="compact" tag="IT" label="Ascolta le lettere" />
+          {vi && <SpeakButton text={vi} slow compact label="Ascolta la sillaba" />}
           <Button variant="ghost" onClick={onClose} aria-label="Chiudi">✕</Button>
         </div>
       </div>

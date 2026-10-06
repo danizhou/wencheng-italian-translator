@@ -1,21 +1,15 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { getSpeechStatus, speak, stopSpeaking, subscribeVoices, type SpeechLang, type SpeechStatus } from "@/lib/speech";
+import { getSpeechStatus, speak, stopSpeaking, subscribeVoices, type SpeechStatus } from "@/lib/speech";
 
-const HINT: Record<SpeechLang, Record<Exclude<SpeechStatus, "ready">, string>> = {
-  vi: {
-    unsupported: "Il tuo browser non supporta la lettura ad alta voce.",
-    "no-voice": "Nessuna voce vietnamita installata: aggiungila nelle impostazioni di sintesi vocale del dispositivo.",
-  },
-  it: {
-    unsupported: "Il tuo browser non supporta la lettura ad alta voce.",
-    "no-voice": "Nessuna voce italiana installata: verrà usata la voce predefinita del dispositivo.",
-  },
+const HINT: Record<Exclude<SpeechStatus, "ready">, string> = {
+  unsupported: "Il tuo browser non supporta la lettura ad alta voce.",
+  "no-voice": "Nessuna voce vietnamita installata: aggiungila nelle impostazioni di sintesi vocale del dispositivo.",
 };
 
-export function useSpeechStatus(lang: SpeechLang): SpeechStatus {
-  return useSyncExternalStore(subscribeVoices, () => getSpeechStatus(lang), () => "unsupported");
+export function useSpeechStatus(): SpeechStatus {
+  return useSyncExternalStore(subscribeVoices, getSpeechStatus, () => "unsupported");
 }
 
 function SpeakerIcon() {
@@ -28,25 +22,16 @@ function SpeakerIcon() {
 }
 
 interface Props {
+  /** Vietnamese respelling to read (src/lib/vi.ts) */
   text: string;
-  /** "vi": a Vietnamese voice reads the Vietnamese respelling, with tones; "it": an Italian voice reads the Italian spelling */
-  lang: SpeechLang;
   slow?: boolean;
   label: string;
-  variant?: "primary" | "secondary" | "compact";
-  /** Short tag shown on compact buttons, e.g. "VI" or "IT" */
-  tag?: string;
+  compact?: boolean;
 }
 
-const STYLE = {
-  primary: "bg-appbar px-4 py-2 text-sm text-white hover:opacity-90",
-  secondary: "border border-on-accent/20 bg-surface px-3 py-2 text-sm text-text hover:bg-surface-2 dark:border-accent/30",
-  compact: "h-9 px-2.5 text-xs text-primary hover:bg-primary-soft",
-};
-
-/** Reads text aloud with the browser's own voice for that language. */
-export function SpeakButton({ text, lang, slow = false, label, variant = "primary", tag }: Props) {
-  const status = useSpeechStatus(lang);
+/** Reads the pronunciation aloud with the device's Vietnamese voice. */
+export function SpeakButton({ text, slow = false, label, compact = false }: Props) {
+  const status = useSpeechStatus();
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => () => stopSpeaking(), []);
@@ -58,7 +43,7 @@ export function SpeakButton({ text, lang, slow = false, label, variant = "primar
       return;
     }
     setPlaying(true);
-    await speak(text, { lang, rate: slow ? 0.6 : 0.9 });
+    await speak(text, { rate: slow ? 0.6 : 0.9 });
     setPlaying(false);
   };
 
@@ -67,25 +52,21 @@ export function SpeakButton({ text, lang, slow = false, label, variant = "primar
       type="button"
       onClick={() => void toggle()}
       disabled={status === "unsupported" || !text.trim()}
-      title={status === "ready" ? `${label}: “${text}”` : HINT[lang][status]}
-      aria-label={variant === "compact" ? `${label}: ${text}` : undefined}
+      title={status === "ready" ? `${label}: “${text}”` : HINT[status]}
+      aria-label={compact ? `${label}: ${text}` : undefined}
       aria-pressed={playing}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-full font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${STYLE[variant]} ${playing ? "ring-2 ring-accent" : ""}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
+        compact ? "size-9 text-primary hover:bg-primary-soft" : "bg-appbar px-4 py-2 text-sm text-white hover:opacity-90"
+      } ${playing ? "ring-2 ring-accent" : ""}`}
     >
       <SpeakerIcon />
-      {variant === "compact" ? tag : playing ? "Stop" : label}
+      {!compact && (playing ? "Stop" : label)}
     </button>
   );
 }
 
-/** Explains a missing voice, as list items under the result. */
+/** Explains a missing voice, as a list item under the result. */
 export function SpeechNotice() {
-  const vi = useSpeechStatus("vi");
-  const it = useSpeechStatus("it");
-  return (
-    <>
-      {vi !== "ready" && <li>{HINT.vi[vi]}</li>}
-      {it !== "ready" && it !== vi && <li>{HINT.it[it]}</li>}
-    </>
-  );
+  const status = useSpeechStatus();
+  return status === "ready" ? null : <li>{HINT[status]}</li>;
 }
