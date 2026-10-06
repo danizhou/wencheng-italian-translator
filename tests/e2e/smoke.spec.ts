@@ -1,6 +1,6 @@
 import { expect, test, type Page, type Request } from "@playwright/test";
 
-const PROVIDERS = /api\.anthropic\.com|api\.openai\.com/;
+const PROVIDERS = /api\.anthropic\.com|api\.openai\.com|api\.x\.ai/;
 
 /** Records every request; the page under test must never send the key to its own origin. */
 function recordRequests(page: Page) {
@@ -127,4 +127,45 @@ test("reads the Italian spelling aloud with an Italian voice", async ({ page }) 
     { text: "eng ciu meng la", lang: "it-IT", rate: 0.9, voice: "Italiano" },
     { text: "ciu", lang: "it-IT", rate: 0.6, voice: "Italiano" },
   ]);
+});
+
+test("switches to xAI (Grok), keeps one key per provider, and sends each key only to its provider", async ({ page }) => {
+  const requests = recordRequests(page);
+  await page.route("https://api.x.ai/**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        choices: [{ message: { content: JSON.stringify({ zh: "谢谢", words: [], confidence: "alta", note: "" }) }, finish_reason: "stop" }],
+      }),
+    }),
+  );
+
+  await page.goto("./");
+  await page.getByPlaceholder("sk-ant-…").fill("sk-ant-mine");
+  await page.getByLabel("Provider").selectOption("xai");
+  await expect(page.getByLabel("Modello")).toHaveValue("grok-4.7");
+  await page.getByPlaceholder("xai-…").fill("xai-mine");
+  await page.getByPlaceholder("Scrivi una frase in italiano…").fill("Grazie");
+  await page.getByRole("button", { name: "Traduci" }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("zi zi");
+
+  const provider = requests.filter((r) => PROVIDERS.test(r.url()));
+  expect(provider.map((r) => new URL(r.url()).host)).toEqual(["api.x.ai"]);
+  expect(await provider[0].headerValue("authorization")).toBe("Bearer xai-mine");
+
+  // Each provider keeps its own key after a reload
+  await page.reload();
+  await expect(page.getByLabel("Provider")).toHaveValue("xai");
+  await expect(page.getByPlaceholder("xai-…")).toHaveValue("xai-mine");
+  await page.getByLabel("Provider").selectOption("anthropic");
+  await expect(page.getByPlaceholder("sk-ant-…")).toHaveValue("sk-ant-mine");
+});
+
+test("accepts a custom model ID", async ({ page }) => {
+  await page.goto("./");
+  await page.getByLabel("Provider").selectOption("openai");
+  await page.getByLabel("Modello").selectOption("__custom__");
+  await page.getByLabel(/ID del modello/).fill("gpt-5.4");
+  await page.reload();
+  await expect(page.getByLabel(/ID del modello/)).toHaveValue("gpt-5.4");
 });
