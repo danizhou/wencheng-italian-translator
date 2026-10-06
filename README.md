@@ -6,7 +6,7 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 
 ## Come si usa
 
-1. Apri il sito, scegli il dialetto (Wencheng o Qingtian) e prova un esempio: funziona anche senza chiave. Cambiando dialetto, la frase già mostrata viene riletta con la pronuncia dell'altro, senza una nuova traduzione.
+1. Apri il sito, scegli il dialetto (Wencheng o Qingtian) e una delle **frasi pronte**: una ventina di frasi di tutti i giorni in casa (a tavola, in casa, uscire e rientrare, il tempo, soldi e spesa, risposte veloci). Puoi cercarle o filtrarle per categoria e funzionano anche senza chiave. Le frasi segnate "da verificare" sono state scritte senza un parlante di Wencheng: correggile in `src/data/phrases.json` quando le senti dire da qualcuno. Le frasi sono scritte per Wencheng: in Qingtian vengono lette con la pronuncia di Qingtian e sono tutte da verificare. Cambiando dialetto, la frase già mostrata viene riletta con la pronuncia dell'altro, senza una nuova traduzione.
 2. Per tradurre frasi nuove scegli un provider nel riquadro "Chiave API" e inserisci la tua API key:
    - **Anthropic (Claude)**: [console.anthropic.com](https://console.anthropic.com/settings/keys), modello predefinito Claude Haiku 4.5;
    - **OpenAI (GPT)**: [platform.openai.com](https://platform.openai.com/api-keys), modello predefinito GPT-5.4 nano;
@@ -15,7 +15,6 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
    Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider. Tutte e tre le API sono a pagamento a consumo (con i modelli predefiniti, meno di un centesimo per frase); l'app gratuita di Grok non include l'API.
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (per Wencheng: Daxue, Wencheng; per Qingtian: Wenxi, Beishan, Qingtian; per entrambi: Wenzhou).
 4. Premi **Ascolta** per sentire la pronuncia letta da una voce vietnamita, con i toni (spunta "Lento" per rallentare). Nel riquadro di una sillaba, l'altoparlante fa lo stesso per la singola sillaba.
-5. Premi **Scarica audio** per salvare la pronuncia come file WAV. Il file viene creato nel browser con [Piper](https://github.com/rhasspy/piper) (sintesi vocale open source) e una voce vietnamita: la prima volta il browser scarica la voce (63 MB) da Hugging Face e la tiene in memoria, le volte dopo è immediato. La voce del file è diversa da quella di "Ascolta", che usa la voce del dispositivo e non si può registrare.
 
 Nessuna voce sintetica parla i dialetti di Wencheng o di Qingtian. Il vietnamita è la lingua con le voci già presenti nei telefoni che gli somiglia di più: ha i toni e molti suoni del dialetto (ng-, nh, ư, ơ, đ, gi). Per questo la pronuncia IPA viene riscritta in ortografia vietnamita (per esempio 你 ȵi4 → *nhĩ*, "Hai mangiato?" → *nhĩ và chỉ cụ não*) con le regole di `src/data/vi-rules.json`, e i toni vengono resi con i toni vietnamiti più vicini (con i contorni di Wenzhou per Wencheng, con quelli di Qingtian per Qingtian). Il vietnamita serve solo come voce: non è una traduzione in vietnamita. Resta un'approssimazione. L'audio funziona senza chiave e senza connessione; se manca la voce vietnamita, aggiungila nelle impostazioni di sintesi vocale del telefono o del computer.
 

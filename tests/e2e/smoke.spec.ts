@@ -192,15 +192,23 @@ test("accepts a custom model ID", async ({ page }) => {
   await expect(page.getByLabel(/ID del modello/)).toHaveValue("gpt-5.4");
 });
 
-test("offers a downloadable audio file and explains a failed voice download", async ({ page }) => {
-  // No real model download in tests: block the hosts Piper loads from
-  await page.route(/huggingface\.co|cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com/, (route) => route.abort());
+test("browses the ready-made phrases by category and search", async ({ page }) => {
   await page.goto("./");
-  await page.getByRole("button", { name: "Hai mangiato?" }).click();
-  await expect(page.getByTestId("ita-line")).toHaveText("gni va ci cu nau");
-  await expect(page.getByText("La prima volta scarica la voce (63 MB)")).toBeVisible();
+  const list = page.getByTestId("phrase-list");
+  const total = await list.getByRole("button").count();
+  expect(total).toBeGreaterThanOrEqual(20);
 
-  await page.getByRole("button", { name: "Scarica audio" }).click();
-  await expect(page.getByRole("alert").filter({ hasText: "audio" })).toContainText("Non sono riuscito a creare l'audio");
-  await expect(page.getByRole("button", { name: "Scarica audio" })).toBeEnabled();
+  await page.getByRole("tab", { name: "A tavola" }).click();
+  await expect(list.getByRole("button")).not.toHaveCount(total);
+  await expect(list.getByRole("button", { name: /Hai mangiato\?/ })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Tutte" }).click();
+  await page.getByLabel("Cerca una frase").fill("chiavi");
+  await expect(list.getByRole("button")).toHaveCount(1);
+  await list.getByRole("button", { name: /Hai preso le chiavi\?/ }).click();
+  await expect(page.getByRole("region", { name: "Risultato" })).toContainText("Da verificare");
+  await expect(page.getByTestId("ita-line")).not.toBeEmpty();
+
+  await page.getByLabel("Cerca una frase").fill("zzzz");
+  await expect(page.getByText("Nessuna frase trovata.")).toBeVisible();
 });

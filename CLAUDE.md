@@ -9,6 +9,7 @@
 - Two dialects, configured in src/lib/dialects.ts: Wencheng and Qingtian.
 - wencheng.json and qingtian.json are generated (npm run build:data): do not edit them by hand, use overrides.json (keyed by dialect).
 - Source priority: overrides > Daxue (文成大嶨) > Wencheng (文成) > Wenzhou (溫州) for Wencheng; overrides > Wenxi (青田溫溪) > Beishan (青田北山) > Qingtian (青田) > Wenzhou (溫州) for Qingtian. Characters only Wenzhou has get an "estimated" reading (build-data.ts, estimateFromFallback), flagged in the UI.
+- Ready-made phrases live in src/data/phrases.json (traditional characters, written for Wencheng; 'pick' selects a non-default reading, 'verified' only after a native speaker or the plan's table confirms it); every change needs a test in tests/phrases.test.ts.
 - Traditional characters internally; convert LLM output with opencc s2t.
 - Everything shown to the user is simplified Chinese: pass it through toSimplified (src/lib/simplified.ts) and mark it lang="zh-Hans". simplified.json is generated (npm run build:simplified).
 - UI uses the design tokens in src/app/globals.css (blue + yellow, Google Sans) and the primitives in src/components/ui.tsx.
