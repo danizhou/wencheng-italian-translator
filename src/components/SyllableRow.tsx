@@ -1,5 +1,6 @@
 "use client";
 
+import { ESTIMATED_SOURCE, FALLBACK_SOURCE, type DialectId } from "@/lib/dialects";
 import type { Token } from "@/lib/segment";
 import type { SourcedReading } from "@/lib/lookup";
 import { ipaToItalian } from "@/lib/ita";
@@ -11,6 +12,7 @@ import { Button, Chip, Han } from "./ui";
 
 interface Props {
   tokens: Token[];
+  dialect: DialectId;
   selected: number | null;
   onSelect: (index: number | null) => void;
   onChooseAlt: (index: number, alt: SourcedReading) => void;
@@ -22,12 +24,13 @@ function syllableClass(t: Token, isSelected: boolean) {
   const base = "group flex min-w-14 flex-col items-center gap-1 rounded-xl border px-2 py-2 transition";
   const state =
     t.source === null ? "border-danger/40 bg-danger-soft text-danger"
-    : t.source === "wenzhou" ? "border-warn/50 bg-warn-soft"
+    : t.source === FALLBACK_SOURCE ? "border-warn/50 bg-warn-soft"
+    : t.source === ESTIMATED_SOURCE ? "border-dashed border-warn/60"
     : "border-transparent hover:border-border hover:bg-surface-2";
   return `${base} ${state} ${isSelected ? "!border-primary bg-primary-soft" : ""}`;
 }
 
-export function SyllableRow({ tokens, selected, onSelect, onChooseAlt }: Props) {
+export function SyllableRow({ tokens, dialect, selected, onSelect, onChooseAlt }: Props) {
   const current = selected !== null ? tokens[selected] : null;
   return (
     <div className="flex flex-col gap-4">
@@ -56,22 +59,22 @@ export function SyllableRow({ tokens, selected, onSelect, onChooseAlt }: Props) 
       </div>
 
       {current && selected !== null && (
-        <AltPanel token={current} onChoose={(alt) => onChooseAlt(selected, alt)} onClose={() => onSelect(null)} />
+        <AltPanel token={current} dialect={dialect} onChoose={(alt) => onChooseAlt(selected, alt)} onClose={() => onSelect(null)} />
       )}
     </div>
   );
 }
 
-function AltPanel({ token, onChoose, onClose }: { token: Token; onChoose: (alt: SourcedReading) => void; onClose: () => void }) {
+function AltPanel({ token, dialect, onChoose, onClose }: { token: Token; dialect: DialectId; onChoose: (alt: SourcedReading) => void; onClose: () => void }) {
   const char = toSimplified(token.text);
-  const vi = token.ipa ? ipaToVietnamese(token.ipa) : "";
-  const snippet = token.ipa ? JSON.stringify({ chars: { [char]: { ipa: token.ipa, note: "" } } }, null, 2) : null;
+  const vi = token.ipa ? ipaToVietnamese(token.ipa, dialect) : "";
+  const snippet = token.ipa ? JSON.stringify({ [dialect]: { chars: { [char]: { ipa: token.ipa, note: "" } } } }, null, 2) : null;
   return (
     <div className="rounded-xl border border-border bg-surface-2 p-4 text-sm" data-testid="alts">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <Han className="text-2xl">{char}</Han>
-          <Chip tone={token.source === "wenzhou" ? "warn" : token.source ? "primary" : "danger"}>
+          <Chip tone={token.source === FALLBACK_SOURCE || token.source === ESTIMATED_SOURCE ? "warn" : token.source ? "primary" : "danger"}>
             {token.source ? SOURCE_LABEL[token.source] : "Non presente nelle tabelle"}
           </Chip>
         </div>

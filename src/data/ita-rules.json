@@ -6,6 +6,8 @@
   "initials": [
     { "ipa": "ɦŋ̍", "ita": "ng", "_note": "syllabic nasal" },
     { "ipa": "ŋ̍", "ita": "ng" },
+    { "ipa": "n̩", "ita": "n", "_note": "syllabic n (Qingtian)" },
+    { "ipa": "m̩", "ita": "m", "_note": "syllabic m (Qingtian)" },
     { "ipa": "tɕʰ", "ita": "c", "soft": true },
     { "ipa": "tɕ", "ita": "c", "soft": true },
     { "ipa": "dʑ", "ita": "g", "soft": true },
@@ -22,7 +24,11 @@
     { "ipa": "ȵ", "ita": "gn" },
     { "ipa": "ŋ", "ita": "ng" },
     { "ipa": "ɦ", "ita": "", "_note": "silent h: set to \"h\" to write it" },
-    { "ipa": "j", "ita": "i" }
+    { "ipa": "ɓ", "ita": "b", "_note": "implosive b (Qingtian)" },
+    { "ipa": "ɗ", "ita": "d", "_note": "implosive d (Qingtian)" },
+    { "ipa": "x", "ita": "h", "_note": "velar fricative, as in pinyin (Qingtian)" },
+    { "ipa": "j", "ita": "i" },
+    { "ipa": "ɿ", "ita": "i", "_note": "ɿ with no consonant before it: ʔɿ → i, not silent (Qingtian)" }
   ],
   "finals": [
     { "ipa": "yu", "ita": "iu" },
@@ -35,7 +41,17 @@
     { "ipa": "ø", "ita": "eu" },
     { "ipa": "y", "ita": "ü" },
     { "ipa": "ŋ", "ita": "ng" },
-    { "ipa": "ɿ", "ita": "", "_note": "zɿ → z" }
+    { "ipa": "ɿ", "ita": "", "_note": "zɿ → z" },
+    { "ipa": "ʮ", "ita": "u", "_note": "rounded ɿ: tsʮ → zu (Qingtian)" },
+    { "ipa": "ʌʉ", "ita": "eu", "_note": "same spelling as the related ɤu (Qingtian)" },
+    { "ipa": "ɤʉ", "ita": "eu", "_note": "Qingtian" },
+    { "ipa": "ʉ", "ita": "ü", "_note": "Qingtian" },
+    { "ipa": "æ", "ita": "è", "_note": "Qingtian" },
+    { "ipa": "œ", "ita": "eu", "_note": "like ø (Qingtian)" },
+    { "ipa": "ɐ", "ita": "a", "_note": "Qingtian" },
+    { "ipa": "ʌ", "ita": "a", "_note": "Qingtian" },
+    { "ipa": "ɪ", "ita": "i", "_note": "Qingtian" },
+    { "ipa": "ʔ", "ita": "", "_note": "final glottal stop of tones 7/8: not written (Qingtian)" }
   ],
   "frontVowels": ["e", "è", "i"],
   "cleanup": [

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { DialectId } from "@/lib/dialects";
 import { PHRASE_CATEGORIES, PHRASES, transcribePhrase, type Phrase } from "@/lib/phrases";
 import { toSimplified } from "@/lib/simplified";
 import { Card, Chip, Han } from "./ui";
@@ -11,13 +12,25 @@ const ALL = "tutte";
 const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /** Browsable ready-made phrases: work without an API key. */
-export function PhraseLibrary({ onPick, selectedId }: { onPick: (phrase: Phrase) => void; selectedId?: string }) {
+export function PhraseLibrary({ dialect, onPick, selectedId }: { dialect: DialectId; onPick: (phrase: Phrase) => void; selectedId?: string }) {
   const [category, setCategory] = useState(ALL);
   const [query, setQuery] = useState("");
+  // Italian spelling per phrase id, in the chosen dialect (its table loads on first use)
+  const [spelling, setSpelling] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all(PHRASES.map(async (p) => [p.id, (await transcribePhrase(p, dialect)).ita] as const)).then((pairs) => {
+      if (!cancelled) setSpelling(Object.fromEntries(pairs));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [dialect]);
 
   const rows = useMemo(
-    () => PHRASES.map((p) => ({ phrase: p, zh: toSimplified(p.zh), ita: transcribePhrase(p).ita })),
-    [],
+    () => PHRASES.map((p) => ({ phrase: p, zh: toSimplified(p.zh), ita: spelling[p.id] ?? "" })),
+    [spelling],
   );
   const q = fold(query.trim());
   const visible = rows.filter(

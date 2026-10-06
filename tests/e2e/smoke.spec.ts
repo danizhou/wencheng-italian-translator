@@ -24,6 +24,21 @@ test("a precomputed example works without a key and shows alternatives", async (
   await expect(page.getByTestId("alts")).toBeVisible();
 });
 
+test("switches to Qingtian, re-reads the result and remembers the choice", async ({ page }) => {
+  await page.goto("./");
+  await page.getByRole("button", { name: "Non ho soldi" }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("ng nau gie");
+
+  await page.getByRole("radio", { name: /Qingtian/ }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("ng nau gi");
+  await expect(page.getByText("non di Qingtian")).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole("radio", { name: /Qingtian/ })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Grazie" }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("zei zei");
+});
+
 test("shows Chinese in simplified characters only", async ({ page }) => {
   await page.goto("./");
   await page.getByRole("button", { name: "Hai mangiato?" }).click();

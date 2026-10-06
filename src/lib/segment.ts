@@ -1,4 +1,4 @@
-import type { LookupResult, Overrides, SourcedReading } from "./lookup";
+import type { Lookup, Overrides, SourcedReading } from "./lookup";
 import type { Source } from "./data-types";
 import { ipaToItalian } from "./ita";
 import { toSimplified } from "./simplified";
@@ -25,7 +25,7 @@ const PUNCTUATION: Record<string, string> = {
   "「": "\"", "」": "\"", "『": "\"", "』": "\"", "（": "(", "）": ")", "　": " ",
 };
 
-export function createSegmenter(lookup: (char: string) => LookupResult | null, phrases: Overrides["phrases"]) {
+export function createSegmenter(lookup: Lookup, phrases: Overrides["phrases"]) {
   const phraseList = Object.entries(phrases).map(([zh, p]) => {
     const chars = [...zh];
     const syllables = p.ita.trim().split(/\s+/);

@@ -18,7 +18,7 @@ export default function Home() {
             <span lang="zh-Hans" className="flex size-10 items-center justify-center rounded-xl bg-accent text-xl font-bold text-appbar">文</span>
             <div className="leading-tight">
               <h1 className="text-lg font-semibold">Traduttore Wencheng <span lang="zh-Hans" className="font-normal text-accent">文成话</span></h1>
-              <p className="text-xs text-white/70">Italiano → Wenchenghua (Daxue), con la pronuncia all&apos;italiana</p>
+              <p className="text-xs text-white/70">Italiano → dialetto di Wencheng o di Qingtian, con la pronuncia all&apos;italiana</p>
             </div>
           </div>
           <a href={GITHUB_REPO} target="_blank" rel="noreferrer" aria-label="Codice su GitHub" className="flex size-9 items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white">
@@ -38,7 +38,9 @@ export default function Home() {
             <p>
               Pronunce dalle tabelle comunitarie di{" "}
               <a className="font-medium text-primary hover:underline" href="https://github.com/osfans/MCPDict" target="_blank" rel="noreferrer">MCPDict</a>:{" "}
-              <span lang="zh-Hans">文成大峃</span> (Daxue), <span lang="zh-Hans">文成</span> (Wencheng) e <span lang="zh-Hans">温州</span> (Wenzhou).
+              <span lang="zh-Hans">文成大峃</span> (Daxue) e <span lang="zh-Hans">文成</span> (Wencheng);{" "}
+              <span lang="zh-Hans">青田温溪</span> (Wenxi), <span lang="zh-Hans">青田北山</span> (Beishan) e <span lang="zh-Hans">青田</span> (Qingtian);{" "}
+              <span lang="zh-Hans">温州</span> (Wenzhou) per i caratteri che mancano.
             </p>
             <p className="mt-1">Pronuncia approssimata: a Yuhu può essere diversa. La traduzione è generata da un modello AI e può sbagliare.</p>
           </div>

@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ApiKeyPanel } from "./ApiKeyPanel";
+import { DialectPicker } from "./DialectPicker";
 import { ShareCard } from "./ShareCard";
 import { PhraseLibrary } from "./PhraseLibrary";
 import { SpeakButton, SpeechNotice } from "./SpeakButton";
 import { SyllableRow } from "./SyllableRow";
 import { CONFIDENCE, ERROR_MESSAGE } from "./labels";
 import { Button, Card, Chip, Han } from "./ui";
+import { DEFAULT_DIALECT, ESTIMATED_SOURCE, FALLBACK_SOURCE, findDialect, type DialectId } from "@/lib/dialects";
 import { keyStore } from "@/lib/keyStore";
 import {
   createTranslator,
@@ -22,7 +24,8 @@ import {
 } from "@/lib/llm";
 import type { Translation } from "@/lib/llm/schema";
 import type { SourcedReading } from "@/lib/lookup";
-import { transcribePhrase, withReading, type Phrase } from "@/lib/phrases";
+import { isVerified, transcribePhrase, withReading, type Phrase } from "@/lib/phrases";
+import { transcribe } from "@/lib/pipeline";
 import { italianLine, type Token } from "@/lib/segment";
 import { toSimplified } from "@/lib/simplified";
 import { vietnameseLine } from "@/lib/vi";
@@ -32,7 +35,11 @@ interface Result {
   /** Traditional, as used internally; shown through toSimplified */
   zh: string;
   tokens: Token[];
+  /** Dialect the tokens are read in */
+  dialect: DialectId;
   translation: Translation | null;
+  /** Dialect the LLM translated into; null for the precomputed examples */
+  translatedFor: DialectId | null;
   retried: boolean;
   /** Set when the result is a ready-made phrase */
   phrase?: Phrase;
@@ -43,6 +50,7 @@ export function Translator() {
   const [apiKey, setApiKey] = useState("");
   const [save, setSave] = useState(true);
   const [model, setModel] = useState(DEFAULT_MODEL);
+  const [dialectId, setDialectId] = useState<DialectId>(DEFAULT_DIALECT);
   const [input, setInput] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
@@ -51,6 +59,7 @@ export function Translator() {
   const [copied, setCopied] = useState<string | null>(null);
   const [slow, setSlow] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const dialect = findDialect(dialectId);
 
   /** Key and model of a provider, from this device's storage */
   const loadProvider = (p: ProviderId, saveEnabled: boolean) => {
@@ -63,9 +72,11 @@ export function Translator() {
   useEffect(() => {
     const saveEnabled = keyStore.loadSaveEnabled();
     const savedProvider = keyStore.loadProvider();
+    const savedDialect = keyStore.loadDialect();
     /* eslint-disable react-hooks/set-state-in-effect -- one-time read of browser-only storage */
     setSave(saveEnabled);
     loadProvider(isProvider(savedProvider) ? savedProvider : DEFAULT_PROVIDER, saveEnabled);
+    if (savedDialect) setDialectId(findDialect(savedDialect).id);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
@@ -93,12 +104,23 @@ export function Translator() {
     if (id.trim()) keyStore.saveModel(provider, id.trim());
   };
 
+  /** Reads the current sentence again with the other dialect's tables; no new LLM call. */
+  const updateDialect = async (id: DialectId) => {
+    setDialectId(id);
+    keyStore.saveDialect(id);
+    setSelected(null);
+    if (!result) return;
+    const tokens = result.phrase ? (await transcribePhrase(result.phrase, id)).tokens : (await transcribe(result.zh, id)).tokens;
+    setResult({ ...result, tokens, dialect: id });
+  };
+
   const resultRef = useRef<HTMLDivElement>(null);
-  const showPhrase = (phrase: Phrase) => {
+  const showPhrase = async (phrase: Phrase) => {
     setInput(phrase.it);
     setError(null);
     setSelected(null);
-    setResult({ italian: phrase.it, zh: phrase.zh, tokens: transcribePhrase(phrase).tokens, translation: null, retried: false, phrase });
+    const { tokens } = await transcribePhrase(phrase, dialectId);
+    setResult({ italian: phrase.it, zh: phrase.zh, tokens, dialect: dialectId, translation: null, translatedFor: null, retried: false, phrase });
     requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
@@ -117,8 +139,8 @@ export function Translator() {
     }
     setLoading(true);
     try {
-      const r = await translateItalian(italian, createTranslator(provider, apiKey, model));
-      setResult({ italian, zh: r.translation.zh, tokens: r.transcription.tokens, translation: r.translation, retried: r.retried });
+      const r = await translateItalian(italian, createTranslator(provider, apiKey, model), dialectId);
+      setResult({ italian, zh: r.translation.zh, tokens: r.transcription.tokens, dialect: dialectId, translation: r.translation, translatedFor: dialectId, retried: r.retried });
     } catch (e) {
       setError(e instanceof LlmError ? ERROR_MESSAGE[e.kind] : ERROR_MESSAGE.other);
     } finally {
@@ -133,7 +155,7 @@ export function Translator() {
 
   const ita = result ? italianLine(result.tokens) : "";
   const zhShown = result ? toSimplified(result.zh) : "";
-  const viLine = result ? vietnameseLine(result.tokens) : "";
+  const viLine = result ? vietnameseLine(result.tokens, result.dialect) : "";
 
   const copy = async (what: "ita" | "all") => {
     if (!result) return;
@@ -154,16 +176,17 @@ export function Translator() {
     const dataUrl = await toPng(cardRef.current, { pixelRatio: 2 });
     const a = document.createElement("a");
     a.href = dataUrl;
-    a.download = "wenchenghua.png";
+    a.download = `${dialect.id}hua.png`;
     a.click();
   };
 
-  const wenzhouCount = result?.tokens.filter((t) => t.source === "wenzhou").length ?? 0;
+  const wenzhouCount = result?.tokens.filter((t) => t.source === FALLBACK_SOURCE).length ?? 0;
+  const estimatedCount = result?.tokens.filter((t) => t.source === ESTIMATED_SOURCE).length ?? 0;
   const missingCount = result?.tokens.filter((t) => t.kind === "han" && t.source === null).length ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
-      <Card title="Traduci" subtitle="Scrivi in italiano: ottieni il dialetto di Wencheng e come si pronuncia">
+      <Card title="Traduci" subtitle={`Scrivi in italiano: ottieni il dialetto di ${dialect.name} e come si pronuncia`}>
         <form
           className="flex flex-col gap-4"
           onSubmit={(e) => {
@@ -171,6 +194,7 @@ export function Translator() {
             void translate();
           }}
         >
+          <DialectPicker value={dialectId} onChange={(id) => void updateDialect(id)} disabled={loading} />
           <textarea
             className="min-h-28 w-full resize-y rounded-xl border border-border bg-surface-2 p-4 text-lg text-text placeholder:text-muted focus:border-primary focus:bg-surface focus:outline-none"
             placeholder="Scrivi una frase in italiano…"
@@ -208,7 +232,7 @@ export function Translator() {
           actions={
             result.translation ? (
               <Chip tone={CONFIDENCE[result.translation.confidence].tone}>{CONFIDENCE[result.translation.confidence].label}</Chip>
-            ) : result.phrase?.verified ? (
+            ) : result.phrase && isVerified(result.phrase, result.dialect) ? (
               <Chip tone="primary">Frase pronta</Chip>
             ) : (
               <Chip tone="warn">Da verificare</Chip>
@@ -230,7 +254,7 @@ export function Translator() {
               </div>
             </div>
 
-            <SyllableRow tokens={result.tokens} selected={selected} onSelect={setSelected} onChooseAlt={chooseAlt} />
+            <SyllableRow tokens={result.tokens} dialect={result.dialect} selected={selected} onSelect={setSelected} onChooseAlt={chooseAlt} />
 
             {result.translation && result.translation.words.length > 0 && (
               <dl className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
@@ -245,11 +269,17 @@ export function Translator() {
 
             <ul className="flex flex-col gap-1 text-xs text-muted">
               {result.translation?.note && <li>{toSimplified(result.translation.note)}</li>}
-              {result.retried && <li>Riscritta una volta per usare caratteri presenti nelle tabelle di Wencheng.</li>}
-              {wenzhouCount > 0 && <li className="text-warn">Le sillabe evidenziate vengono dal dialetto di Wenzhou città, non di Wencheng.</li>}
+              {result.translatedFor && result.translatedFor !== result.dialect && (
+                <li className="text-warn">
+                  Frase tradotta per il dialetto di {findDialect(result.translatedFor).name}, letta con la pronuncia di {dialect.name}: premi Traduci per tradurla in {dialect.name}.
+                </li>
+              )}
+              {result.retried && <li>Riscritta una volta per usare caratteri presenti nelle tabelle di {findDialect(result.translatedFor ?? dialectId).name}.</li>}
+              {estimatedCount > 0 && <li className="text-warn">Le sillabe tratteggiate non sono nelle tabelle di {dialect.name}: la pronuncia è stimata da quella di Wenzhou città.</li>}
+              {wenzhouCount > 0 && <li className="text-warn">Le sillabe evidenziate vengono dal dialetto di Wenzhou città, non di {dialect.name}.</li>}
               {missingCount > 0 && <li className="text-danger">I caratteri in rosso non sono in nessuna tabella.</li>}
               <li>Tocca una sillaba per vedere le pronunce alternative.</li>
-              <li>“Ascolta” usa una voce vietnamita che legge la pronuncia con i toni: il vietnamita ha molti suoni e toni simili al dialetto, ma resta un&apos;approssimazione, non un parlante di Wencheng.</li>
+              <li>“Ascolta” usa una voce vietnamita che legge la pronuncia con i toni: il vietnamita ha molti suoni e toni simili al dialetto, ma resta un&apos;approssimazione, non un parlante di {dialect.name}.</li>
               <SpeechNotice />
             </ul>
 
@@ -262,12 +292,12 @@ export function Translator() {
 
           {/* Rendered off-screen so html-to-image can capture it */}
           <div aria-hidden className="pointer-events-none fixed -left-[10000px] top-0">
-            <ShareCard ref={cardRef} italian={result.italian} tokens={result.tokens} ita={ita} />
+            <ShareCard ref={cardRef} italian={result.italian} tokens={result.tokens} ita={ita} dialect={dialect} />
           </div>
         </Card>
       )}
 
-      <PhraseLibrary onPick={showPhrase} selectedId={result?.phrase?.id} />
+      <PhraseLibrary dialect={dialectId} onPick={(p) => void showPhrase(p)} selectedId={result?.phrase?.id} />
 
       <ApiKeyPanel
         provider={provider}

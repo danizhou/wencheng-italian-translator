@@ -1,6 +1,7 @@
 import data from "@/data/phrases.json";
+import type { DialectId } from "./dialects";
 import { ipaToItalian } from "./ita";
-import { lookup, overrides } from "./lookup";
+import { loadLookup, overrides } from "./lookup";
 import { createSegmenter, italianLine, type Token } from "./segment";
 
 export interface Phrase {
@@ -9,9 +10,9 @@ export interface Phrase {
   it: string;
   /** Traditional characters, as used internally */
   zh: string;
-  /** Matches the plan's reference table; others still need a native speaker */
+  /** Matches the plan's reference table (Wencheng); others still need a native speaker */
   verified?: boolean;
-  /** Reading to use for a character instead of the default (an IPA from its alternatives) */
+  /** Wencheng reading to use for a character instead of the default (an IPA from its alternatives) */
   pick?: Record<string, string>;
 }
 
@@ -23,7 +24,10 @@ export interface PhraseCategory {
 export const PHRASE_CATEGORIES = data.categories as PhraseCategory[];
 export const PHRASES = data.phrases as Phrase[];
 
-const segment = createSegmenter(lookup, overrides.phrases);
+/** The phrases were written, verified and given their `pick` readings for this dialect only. */
+const PHRASES_DIALECT: DialectId = "wencheng";
+
+export const isVerified = (phrase: Phrase, dialect: DialectId): boolean => dialect === PHRASES_DIALECT && !!phrase.verified;
 
 /** Switches a token to one of its alternative readings. */
 export function withReading(token: Token, ipa: string): Token {
@@ -41,8 +45,10 @@ export function withReading(token: Token, ipa: string): Token {
   };
 }
 
-/** Tokens and Italian line of a ready-made phrase, with its per-character readings. Synchronous: no opencc needed. */
-export function transcribePhrase(phrase: Phrase): { tokens: Token[]; ita: string } {
-  const tokens = segment(phrase.zh).map((t) => (phrase.pick?.[t.text] ? withReading(t, phrase.pick[t.text]) : t));
+/** Tokens and Italian line of a ready-made phrase in one dialect, with its picked readings (Wencheng only). No opencc needed. */
+export async function transcribePhrase(phrase: Phrase, dialect: DialectId): Promise<{ tokens: Token[]; ita: string }> {
+  const segment = createSegmenter(await loadLookup(dialect), overrides[dialect].phrases);
+  const pick = dialect === PHRASES_DIALECT ? phrase.pick : undefined;
+  const tokens = segment(phrase.zh).map((t) => (pick?.[t.text] ? withReading(t, pick[t.text]) : t));
   return { tokens, ita: italianLine(tokens) };
 }

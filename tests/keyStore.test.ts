@@ -59,6 +59,13 @@ describe("keyStore", () => {
     expect(keyStore.loadSaveEnabled()).toBe(false);
   });
 
+  it("remembers the chosen dialect", () => {
+    vi.stubGlobal("window", { localStorage: fakeStorage() });
+    expect(keyStore.loadDialect()).toBeNull();
+    keyStore.saveDialect("qingtian");
+    expect(keyStore.loadDialect()).toBe("qingtian");
+  });
+
   it("does not throw when storage is blocked", () => {
     vi.stubGlobal("window", {
       get localStorage(): Storage {

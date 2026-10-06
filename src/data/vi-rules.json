@@ -1,8 +1,9 @@
 {
-  "_doc": "IPA → Vietnamese spelling rules, used by src/lib/vi.ts to read the pronunciation aloud with a Vietnamese voice. Vietnamese has tones and many Wu sounds (ng-, nh, ư, ơ, đ, gi). Every change needs a test in tests/vi.test.ts. Initials are matched longest first; finals (rhymes) are matched whole.",
+  "_doc": "IPA → Vietnamese spelling rules, used by src/lib/vi.ts to read the pronunciation aloud with a Vietnamese voice. Vietnamese has tones and many Wu sounds (ng-, nh, ư, ơ, đ, gi). Every change needs a test in tests/vi.test.ts. Initials are matched longest first; finals (rhymes) are matched whole. The finals from ʮ on (and ɓ, ɗ, x, n̩, m̩) are for the Qingtian tables.",
   "ignoredPrefixes": ["ʔ"],
-  "syllabicNasals": ["ɦŋ̍", "ʔŋ̍", "ŋ̍"],
-  "syllabicNasal": "ưng",
+  "_ignoredSuffixes": "Final glottal stop of the Qingtian checked tones 7/8: Vietnamese has no -ʔ coda, the nặng tone carries it.",
+  "ignoredSuffixes": ["ʔ"],
+  "syllabicNasals": { "ɦŋ̍": "ưng", "ʔŋ̍": "ưng", "ŋ̍": "ưng", "n̩": "ưn", "m̩": "ưm" },
   "initials": {
     "tɕʰ": "ch", "tɕ": "ch", "dʑ": "gi", "ʑ": "gi", "ɕ": "x",
     "tsʰ": "ch", "ts": "ch", "dz": "d",
@@ -10,7 +11,8 @@
     "tʰ": "th", "t": "t", "d": "đ", "n": "n", "l": "l",
     "s": "x", "z": "d",
     "kʰ": "kh", "k": "c", "ɡ": "g", "ŋ": "ng", "ȵ": "nh",
-    "h": "h", "ɦ": "", "j": ""
+    "h": "h", "ɦ": "", "j": "",
+    "ɓ": "b", "ɗ": "đ", "x": "kh"
   },
   "finals": {
     "i": "i", "u": "u", "y": "uy", "ɿ": "ư",
@@ -23,8 +25,17 @@
     "yu": "iu", "yø": "uyê", "yo": "uô", "yɔ": "uô",
     "aŋ": "ang", "eŋ": "ênh", "oŋ": "ông", "əŋ": "âng", "øŋ": "âng",
     "iaŋ": "iêng", "ioŋ": "iông", "uaŋ": "oang",
-    "yøŋ": "ương", "yəŋ": "uâng"
+    "yøŋ": "ương", "yəŋ": "uâng",
+    "ʮ": "ư", "ʉ": "ư", "œ": "ơ", "eu": "êu",
+    "æi": "ay", "ʌʉ": "âu", "ɤʉ": "âu",
+    "iɑ": "ia", "iə": "ia", "iæ": "iê", "iœ": "iơ", "iʉ": "iu",
+    "uɐ": "oa", "uɛ": "oe", "uæ": "oe", "uæi": "oay", "ue": "uê", "uø": "uơ",
+    "yə": "uơ", "yɐ": "uya", "yæ": "uyê",
+    "iŋ": "inh", "ɪŋ": "inh", "yaŋ": "oang"
   },
-  "_tones": "Wenzhou contours (zh.wikipedia 温州话): 1=33 2=31 3=45ʔ 4=34ʔ 5=42 6=11 7=313 8=213, 0=neutral. Vietnamese: ngang (none), huyền (grave), sắc (acute), ngã (tilde), nặng (dot below), hỏi (hook).",
-  "tones": { "0": "", "1": "", "2": "huyen", "3": "sac", "4": "nga", "5": "nang", "6": "huyen", "7": "hoi", "8": "hoi" }
+  "_tones": "Per dialect. Vietnamese: ngang (none), huyền (grave), sắc (acute), ngã (tilde), nặng (dot below), hỏi (hook). Wencheng uses the Wenzhou contours (zh.wikipedia 温州话): 1=33 2=31 3=45ʔ 4=34ʔ 5=42 6=11 7=313 8=213. Qingtian contours from the MCPDict Qingtian county survey (青田YB): 1=445 2=21 3=454 4=343 5=33 6=22 7=42ʔ 8=31ʔ. 0=neutral.",
+  "tones": {
+    "wencheng": { "0": "", "1": "", "2": "huyen", "3": "sac", "4": "nga", "5": "nang", "6": "huyen", "7": "hoi", "8": "hoi" },
+    "qingtian": { "0": "", "1": "", "2": "huyen", "3": "sac", "4": "nga", "5": "", "6": "huyen", "7": "nang", "8": "nang" }
+  }
 }

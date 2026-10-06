@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { transcribe } from "@/lib/pipeline";
 import { pickVariants } from "@/lib/opencc";
 import { createSegmenter, italianLine } from "@/lib/segment";
-import { lookup } from "@/lib/lookup";
+import { loadLookup } from "@/lib/lookup";
+
+const lookup = await loadLookup("wencheng");
 
 describe("transcribe — the §1 table end to end", () => {
   it.each([
@@ -12,13 +14,13 @@ describe("transcribe — the §1 table end to end", () => {
     ["你做甚物", "gni ciu zang ma"],
     ["我冇錢", "ng nau gie"],
   ])("%s → %s", async (zh, ita) => {
-    const r = await transcribe(zh);
+    const r = await transcribe(zh, "wencheng");
     expect(r.ita).toBe(ita);
     expect(r.missing).toEqual([]);
   });
 
   it("gives IPA, tone and source per syllable", async () => {
-    const r = await transcribe("我冇錢");
+    const r = await transcribe("我冇錢", "wencheng");
     expect(r.tokens.map((t) => [t.text, t.ipa, t.tone, t.source])).toEqual([
       ["我", "ɦŋ̍4", 4, "daxue"],
       ["冇", "nau4", 4, "wencheng"],
@@ -27,26 +29,44 @@ describe("transcribe — the §1 table end to end", () => {
   });
 
   it("accepts simplified characters", async () => {
-    const r = await transcribe("你饭吃过冇");
+    const r = await transcribe("你饭吃过冇", "wencheng");
     expect(r.zh).toBe("你飯吃過冇");
     expect(r.ita).toBe("gni va ci cu nau");
-    expect((await transcribe("我去米兰")).zh).toBe("我去米蘭");
+    expect((await transcribe("我去米兰", "wencheng")).zh).toBe("我去米蘭");
   });
 
   it("keeps punctuation attached and maps it to ASCII", async () => {
-    expect((await transcribe("你飯吃過冇？")).ita).toBe("gni va ci cu nau?");
-    expect((await transcribe("謝謝，我冇錢。")).ita).toBe("zi zi, ng nau gie.");
+    expect((await transcribe("你飯吃過冇？", "wencheng")).ita).toBe("gni va ci cu nau?");
+    expect((await transcribe("謝謝，我冇錢。", "wencheng")).ita).toBe("zi zi, ng nau gie.");
   });
 
   it("marks characters missing from every table", async () => {
-    const r = await transcribe("你𠀀");
+    const r = await transcribe("你𠀀", "wencheng");
     expect(r.missing).toEqual(["𠀀"]);
     expect(r.ita).toBe("gni ?");
   });
 
   it("uses the phrase override from overrides.json", async () => {
-    const r = await transcribe("你飯吃過冇");
+    const r = await transcribe("你飯吃過冇", "wencheng");
     expect(r.tokens.every((t) => t.source === "phrase")).toBe(true);
+  });
+});
+
+describe("transcribe — Qingtian", () => {
+  it.each([
+    ["你飯吃過冇", "gni va ciai cheu nau"],
+    ["謝謝", "zei zei"],
+    ["我去米蘭", "ng che mei la"],
+    ["我冇錢", "ng nau gi"],
+  ])("%s → %s", async (zh, ita) => {
+    const r = await transcribe(zh, "qingtian");
+    expect(r.ita).toBe(ita);
+    expect(r.missing).toEqual([]);
+  });
+
+  it("ignores the Wencheng phrase override and flags the Wenzhou fallback", async () => {
+    const r = await transcribe("你飯吃過冇", "qingtian");
+    expect(r.tokens.map((t) => t.source)).toEqual(["wenxi", "wenxi", "wenxi", "wenxi", "wenzhou"]);
   });
 });
 

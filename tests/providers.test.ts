@@ -50,7 +50,7 @@ describe.each([
 
   it("sends the key only to its own API, as a Bearer token, with a strict JSON schema", async () => {
     const fetch = stubFetch(200, completion(JSON.stringify(translation)));
-    const out = await createOpenAiCompatibleTranslator(provider, "secret-key", model)("Frase italiana:\nGrazie");
+    const out = await createOpenAiCompatibleTranslator(provider, "secret-key", model)("system", "Frase italiana:\nGrazie");
     expect(out).toEqual(translation);
 
     const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
@@ -76,27 +76,27 @@ describe.each([
     [404, "other"],
   ])("maps HTTP %i to %s", async (status, kind) => {
     stubFetch(status, { error: { message: "x" } });
-    const err = await createOpenAiCompatibleTranslator(provider, "k", model)("x").catch((e) => e);
+    const err = await createOpenAiCompatibleTranslator(provider, "k", model)("system", "x").catch((e) => e);
     expect(err).toBeInstanceOf(LlmError);
     expect(err.kind).toBe(kind);
   });
 
   it("maps network and CORS failures", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
-    const err = await createOpenAiCompatibleTranslator(provider, "k", model)("x").catch((e) => e);
+    const err = await createOpenAiCompatibleTranslator(provider, "k", model)("system", "x").catch((e) => e);
     expect(err.kind).toBe("network");
   });
 
   it("maps refusals and malformed output", async () => {
     stubFetch(200, completion(null, { refusal: "no" }));
-    expect((await createOpenAiCompatibleTranslator(provider, "k", model)("x").catch((e) => e)).kind).toBe("refusal");
+    expect((await createOpenAiCompatibleTranslator(provider, "k", model)("system", "x").catch((e) => e)).kind).toBe("refusal");
     stubFetch(200, completion('{"zh": 1}'));
-    expect((await createOpenAiCompatibleTranslator(provider, "k", model)("x").catch((e) => e)).kind).toBe("bad_output");
+    expect((await createOpenAiCompatibleTranslator(provider, "k", model)("system", "x").catch((e) => e)).kind).toBe("bad_output");
   });
 
   it("runs the whole pipeline through createTranslator", async () => {
     stubFetch(200, completion(JSON.stringify({ ...translation, zh: "我冇钱" })));
-    const r = await translateItalian("Non ho soldi", createTranslator(provider, "k", model));
+    const r = await translateItalian("Non ho soldi", createTranslator(provider, "k", model), "wencheng");
     expect(r.transcription.ita).toBe("ng nau gie");
   });
 });
