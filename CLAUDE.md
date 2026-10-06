@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Wencheng Translator — project rules
+# Wenzhouhua Translator — project rules
 - All code, comments, tests, commit messages and docs are in English. Only README.md is in Italian. User-facing UI text stays in Italian.
 - Deterministic pipeline: the only LLM call lives in src/lib/llm. No agent framework.
 - The user's API key must NEVER be sent to our server or logged. It is saved only locally (localStorage), by default, with a visible notice and an opt-out.

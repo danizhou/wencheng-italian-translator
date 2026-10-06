@@ -90,7 +90,7 @@ export function PhraseLibrary({ dialect, onPick, selectedId }: { dialect: Dialec
           </ul>
         )}
         <p className="text-xs text-muted">
-          Le frasi segnate “da verificare” sono state scritte senza un parlante di Wencheng: possono avere parole del mandarino o di Wenzhou.{" "}
+          Le frasi segnate “da verificare” sono state scritte senza un parlante del dialetto: possono avere parole del mandarino o di Wenzhou.{" "}
           <Chip tone="warn">da verificare</Chip>
         </p>
       </div>
