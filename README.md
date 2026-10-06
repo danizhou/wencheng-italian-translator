@@ -12,7 +12,7 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
    - **OpenAI (GPT)**: [platform.openai.com](https://platform.openai.com/api-keys), modello predefinito GPT-5.4 nano;
    - **xAI (Grok)**: [console.x.ai](https://console.x.ai), modello predefinito Grok 4.7.
 
-   Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider. Tutte e tre le API sono a pagamento (a consumo, pochi centesimi per frase); l'app gratuita di Grok non include l'API.
+   Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider. Tutte e tre le API sono a pagamento a consumo (con i modelli predefiniti, meno di un centesimo per frase); l'app gratuita di Grok non include l'API.
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (Daxue, Wencheng o Wenzhou).
 4. Premi **Ascolta** per sentire la pronuncia (spunta "Lento" per rallentarla), oppure l'altoparlante nel riquadro di una sillaba.
 
