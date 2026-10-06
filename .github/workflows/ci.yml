@@ -29,7 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          PAGES_BASE_PATH: /wencheng-italian-traslator
+          PAGES_BASE_PATH: /wencheng-italian-translator
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e        # smoke test on the static export, no real API key
       - if: failure()

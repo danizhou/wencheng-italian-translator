@@ -59,12 +59,12 @@ npm run test:e2e   # smoke test Playwright sulla build in out/
 
 ## Pubblicazione su GitHub Pages
 
-Il sito è pubblicato su **https://danizhou.github.io/wencheng-italian-traslator/** dal workflow `.github/workflows/pages.yml`, a ogni push su `main` (oppure a mano da Actions → Pages → Run workflow).
+Il sito è pubblicato su **https://danizhou.github.io/wencheng-italian-translator/** dal workflow `.github/workflows/pages.yml`, a ogni push su `main` (oppure a mano da Actions → Pages → Run workflow).
 
 Configurazione una tantum: nel repo vai su **Settings → Pages → Build and deployment → Source** e scegli **GitHub Actions**.
 
 Per provare in locale la build con il prefisso di Pages:
 
 ```bash
-PAGES_BASE_PATH=/wencheng-italian-traslator npm run build
+PAGES_BASE_PATH=/wencheng-italian-translator npm run build
 ```
