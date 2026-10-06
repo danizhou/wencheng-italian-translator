@@ -221,6 +221,7 @@ Each phase ends with green tests and a demo.
 | **4. LLM BYOK** | Anthropic provider (+ OpenAI), structured output, coverage retry, error handling (wrong key, 401, 429, network) | real translation from the browser; the key appears in no request to our domain (check the Network tab) |
 | **5. UI** | full page, precomputed examples, clickable alternatives, copy and PNG export | usable on mobile |
 | **6. Deploy** | `preview.yml` and `production.yml` workflows (§10); Playwright smoke test on the preview; README with instructions for data, overrides, keys and secrets | every PR gets a comment with the preview URL and a green smoke test; merging to `main` deploys to production |
+| **7. Audio** | §12 step 1: browser speech (Web Speech API) reads the Italian letters; "Ascolta" + slow mode + per-syllable play | works without a key or network; e2e test checks the spoken text and voice |
 
 ## 8. CLAUDE.md (created in phase 0)
 
@@ -244,7 +245,7 @@ Each phase ends with green tests and a demo.
 
 ## 10. CI/CD with GitHub Actions
 
-> **Update:** production hosting is **GitHub Pages**, deployed by `.github/workflows/pages.yml` on every push to `main` (site: `https://danizhou.github.io/wencheng-italian-traslator/`). The build gets the `/<repo>` prefix through `PAGES_BASE_PATH` → `basePath` in `next.config.ts`. The Vercel workflows below (per-PR previews and the `production.yml` deploy) are optional and only needed for PR previews.
+> **Update:** production hosting is **GitHub Pages**, deployed by `.github/workflows/pages.yml` on every push to `main` (site: `https://danizhou.github.io/wencheng-italian-translator/`). The build gets the `/<repo>` prefix through `PAGES_BASE_PATH` → `basePath` in `next.config.ts`. The Vercel workflows below (per-PR previews and the `production.yml` deploy) are optional and only needed for PR previews.
 
 ### Choice
 
@@ -397,5 +398,16 @@ Runs against `BASE_URL`, with no API key.
 
 ## 11. Out of scope (for now)
 
-- Audio/TTS. Possible next steps: (a) Qwen3-TTS with a cloned voice (with consent) reading the Italian letters; (b) a bank of syllables recorded by a speaker and concatenated.
 - Reverse direction (Yuhu dialect → Italian): at most a static glossary of typical phrases.
+
+## 12. Audio
+
+Two different sounds: the **meme sound** (an Italian voice reading "gni va ci cu nau") and the **real sound** (a Wencheng speaker, with tones). No TTS model speaks Wenchenghua, so the real sound needs recordings. Size: 1,040 Wencheng syllables with tone (385 toneless); the 5 examples use 14.
+
+1. **Browser speech — done (phase 7).** `src/lib/speech.ts`: Web Speech API, it-IT voice, no key, no network. Vowel-less syllables are made pronounceable for speech only (ng → eng, z → ze, s → se; ü → iu); the on-screen spelling does not change. "Ascolta" on the line, "Lento" toggle, per-syllable play in the alternatives panel. The UI states it is an Italian voice, not a Wencheng speaker.
+2. **Recordings by a Yuhu speaker (next, needs a speaker).**
+   - In-app "Registra" mode: shows the next syllable (character, IPA, Italian letters), records with MediaRecorder, playback and retake, downloads a zip. Nothing leaves the speaker's device.
+   - Order: the 14 example syllables, then verified phrases, then the ~300 most frequent syllables.
+   - Files: `public/audio/syllables/<ipa>.mp3`, `public/audio/phrases/<phrase>.mp3`, plus an index JSON.
+   - Playback priority: recorded phrase → recorded syllables (crossfaded) → browser speech for the rest; a 🎙️ badge marks real recordings.
+3. **Optional:** BYOK cloud TTS for a nicer meme voice; a cloned voice (Qwen3-TTS) only with the speaker's consent and a backend, which this static site does not have.

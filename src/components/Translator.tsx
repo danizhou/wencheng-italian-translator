@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ApiKeyPanel } from "./ApiKeyPanel";
 import { ExampleChips, type Example } from "./ExampleChips";
 import { ShareCard } from "./ShareCard";
+import { SpeakButton, SpeechNotice } from "./SpeakButton";
 import { SyllableRow } from "./SyllableRow";
 import { CONFIDENCE, ERROR_MESSAGE } from "./labels";
 import { Button, Card, Chip, Han } from "./ui";
@@ -35,6 +36,7 @@ export function Translator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [slow, setSlow] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Restore preferences after hydration (the static HTML has no access to localStorage).
@@ -186,9 +188,18 @@ export function Translator() {
           actions={result.translation ? <Chip tone={CONFIDENCE[result.translation.confidence].tone}>{CONFIDENCE[result.translation.confidence].label}</Chip> : <Chip tone="primary">Esempio</Chip>}
         >
           <div className="flex flex-col gap-5">
-            <div className="rounded-xl bg-accent-soft px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-on-accent/70 dark:text-accent/80">Pronuncia</p>
-              <p className="mt-1 text-3xl font-bold tracking-wide text-on-accent dark:text-accent" data-testid="ita-line">{ita}</p>
+            <div className="flex flex-wrap items-end justify-between gap-3 rounded-xl bg-accent-soft px-4 py-3">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-on-accent/70 dark:text-accent/80">Pronuncia</p>
+                <p className="mt-1 text-3xl font-bold tracking-wide text-on-accent dark:text-accent" data-testid="ita-line">{ita}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-1.5 text-xs font-medium text-on-accent/80 dark:text-accent/80">
+                  <input type="checkbox" className="size-3.5 accent-[var(--primary)]" checked={slow} onChange={(e) => setSlow(e.target.checked)} />
+                  Lento
+                </label>
+                <SpeakButton text={ita} slow={slow} />
+              </div>
             </div>
 
             <SyllableRow tokens={result.tokens} selected={selected} onSelect={setSelected} onChooseAlt={chooseAlt} />
@@ -210,6 +221,8 @@ export function Translator() {
               {wenzhouCount > 0 && <li className="text-warn">Le sillabe evidenziate vengono dal dialetto di Wenzhou città, non di Wencheng.</li>}
               {missingCount > 0 && <li className="text-danger">I caratteri in rosso non sono in nessuna tabella.</li>}
               <li>Tocca una sillaba per vedere le pronunce alternative.</li>
+              <li>L&apos;audio è una voce italiana che legge le lettere: non è la voce di un parlante di Wencheng.</li>
+              <SpeechNotice />
             </ul>
 
             <div className="flex flex-wrap gap-2 border-t border-border pt-4">

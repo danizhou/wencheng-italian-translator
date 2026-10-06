@@ -28,4 +28,4 @@ export const CONFIDENCE: Record<"alta" | "media" | "bassa", { label: string; ton
 };
 
 export const GITHUB_PROFILE = "https://github.com/danizhou";
-export const GITHUB_REPO = "https://github.com/danizhou/wencheng-italian-traslator";
+export const GITHUB_REPO = "https://github.com/danizhou/wencheng-italian-translator";

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // BASE_URL points at a deployed site; without it, the local static export is served.
-const baseURL = process.env.BASE_URL ?? "http://localhost:4173/wencheng-italian-traslator/";
+const baseURL = process.env.BASE_URL ?? "http://localhost:4173/wencheng-italian-translator/";
 
 export default defineConfig({
   testDir: "tests/e2e",

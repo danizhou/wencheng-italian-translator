@@ -8,7 +8,7 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("../out", import.meta.url));
-const BASE = process.env.PAGES_BASE_PATH ?? "/wencheng-italian-traslator";
+const BASE = process.env.PAGES_BASE_PATH ?? "/wencheng-italian-translator";
 const PORT = Number(process.argv[2] ?? 4173);
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css",
