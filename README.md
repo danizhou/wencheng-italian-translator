@@ -7,15 +7,20 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 ## Come si usa
 
 1. Apri il sito e prova un esempio: funziona anche senza chiave.
-2. Per tradurre frasi nuove inserisci la tua API key Anthropic nel riquadro "Chiave API" (la crei su [console.anthropic.com](https://console.anthropic.com/settings/keys)).
+2. Per tradurre frasi nuove scegli un provider nel riquadro "Chiave API" e inserisci la tua API key:
+   - **Anthropic (Claude)**: [console.anthropic.com](https://console.anthropic.com/settings/keys), modello predefinito Claude Haiku 4.5;
+   - **OpenAI (GPT)**: [platform.openai.com](https://platform.openai.com/api-keys), modello predefinito GPT-5.4 nano;
+   - **xAI (Grok)**: [console.x.ai](https://console.x.ai), modello predefinito Grok 4.7.
+
+   Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider. Tutte e tre le API sono a pagamento (a consumo, pochi centesimi per frase); l'app gratuita di Grok non include l'API.
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (Daxue, Wencheng o Wenzhou).
 4. Premi **Ascolta** per sentire la pronuncia (spunta "Lento" per rallentarla), oppure l'altoparlante nel riquadro di una sillaba.
 
 L'audio usa la voce italiana del tuo browser (Web Speech API): funziona senza chiave e senza connessione, ma è una voce italiana che legge le lettere, non un parlante di Wencheng. Se il dispositivo non ha una voce italiana viene usata quella predefinita. Le registrazioni di un parlante sono il passo successivo (vedi `PLAN.md`, §12).
 
-La chiave è salvata solo in locale, nel `localStorage` del tuo browser, e va solo ad `api.anthropic.com` quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
+La chiave è salvata solo in locale, nel `localStorage` del tuo browser (una per provider), e va solo all'API di quel provider (`api.anthropic.com`, `api.openai.com` o `api.x.ai`) quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
 
-Il cinese nel sito è sempre in caratteri semplificati. Le tabelle restano in tradizionale e vengono convertite solo per la visualizzazione (`src/data/simplified.json`, generato con `npm run build:simplified`). Modello predefinito: Claude Haiku 4.5 (veloce ed economico); si può scegliere anche Sonnet 5.5 o Opus 5.5.
+Il cinese nel sito è sempre in caratteri semplificati. Le tabelle restano in tradizionale e vengono convertite solo per la visualizzazione (`src/data/simplified.json`, generato con `npm run build:simplified`). 
 
 ## Come funziona
 

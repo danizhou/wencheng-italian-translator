@@ -12,13 +12,13 @@ export const SOURCE_LABEL: Record<TokenSource, string> = {
 
 export const ERROR_MESSAGE: Record<LlmErrorKind, string> = {
   no_key: "Inserisci la tua API key per tradurre frasi nuove. Gli esempi funzionano anche senza.",
-  auth: "La API key non è valida o non ha accesso a questo modello. Controllala nella console Anthropic.",
+  auth: "La API key non è valida o non ha accesso a questo modello. Controllala nella console del provider.",
   rate_limit: "Troppe richieste o credito esaurito sul tuo account. Riprova tra poco.",
   overloaded: "Il servizio è sovraccarico in questo momento. Riprova tra qualche secondo.",
-  network: "Errore di rete: controlla la connessione e riprova.",
+  network: "Errore di rete: controlla la connessione. Se succede sempre con questo provider, potrebbe non accettare richieste dirette dal browser.",
   refusal: "Il modello non ha voluto tradurre questa frase. Prova a riformularla.",
   bad_output: "Il modello ha risposto in un formato inatteso. Riprova.",
-  other: "Qualcosa è andato storto. Riprova.",
+  other: "Qualcosa è andato storto: controlla che il modello esista per questo provider e riprova.",
 };
 
 export const CONFIDENCE: Record<"alta" | "media" | "bassa", { label: string; tone: "success" | "accent" | "warn" }> = {

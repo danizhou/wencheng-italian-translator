@@ -1,10 +1,14 @@
+import type { ProviderId } from "./llm/models";
+
 /**
- * The user's API key is saved locally in this browser (localStorage) by default,
- * with a visible notice and an opt-out. It is never sent anywhere except the
- * provider's API.
+ * API keys are saved locally in this browser (localStorage), one per provider,
+ * by default, with a visible notice and an opt-out. They are never sent anywhere
+ * except that provider's API.
  */
-const KEY = "wencheng.anthropicKey";
-const MODEL = "wencheng.model";
+const keyName = (provider: ProviderId) => `wencheng.key.${provider}`;
+const LEGACY_ANTHROPIC_KEY = "wencheng.anthropicKey";
+const PROVIDER = "wencheng.provider";
+const modelName = (provider: ProviderId) => `wencheng.model.${provider}`;
 const NO_SAVE = "wencheng.doNotSaveKey";
 
 function storage(): Storage | null {
@@ -35,13 +39,24 @@ function write(name: string, value: string | null) {
 }
 
 export const keyStore = {
-  /** The key saved on this device, if any */
-  loadSaved: (): string | null => read(KEY),
-  save: (apiKey: string) => write(KEY, apiKey.trim() ? apiKey : null),
-  forget: () => write(KEY, null),
+  /** The key saved on this device for that provider, if any */
+  loadSaved: (provider: ProviderId): string | null =>
+    read(keyName(provider)) ?? (provider === "anthropic" ? read(LEGACY_ANTHROPIC_KEY) : null),
+  save: (provider: ProviderId, apiKey: string) => {
+    write(keyName(provider), apiKey.trim() ? apiKey : null);
+    if (provider === "anthropic") write(LEGACY_ANTHROPIC_KEY, null);
+  },
+  forget: (provider: ProviderId) => {
+    write(keyName(provider), null);
+    if (provider === "anthropic") write(LEGACY_ANTHROPIC_KEY, null);
+  },
+  /** Removes the keys of every provider */
+  forgetAll: (providers: readonly ProviderId[]) => providers.forEach((p) => keyStore.forget(p)),
   /** Saving is on unless the user turned it off on this device */
   loadSaveEnabled: (): boolean => read(NO_SAVE) !== "1",
   setSaveEnabled: (enabled: boolean) => write(NO_SAVE, enabled ? null : "1"),
-  loadModel: (): string | null => read(MODEL),
-  saveModel: (model: string) => write(MODEL, model),
+  loadProvider: (): string | null => read(PROVIDER),
+  saveProvider: (provider: ProviderId) => write(PROVIDER, provider),
+  loadModel: (provider: ProviderId): string | null => read(modelName(provider)),
+  saveModel: (provider: ProviderId, model: string) => write(modelName(provider), model),
 };

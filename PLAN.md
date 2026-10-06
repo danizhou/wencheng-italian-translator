@@ -27,7 +27,7 @@ Target examples:
 - **Stack:** Next.js (App Router) + TypeScript + Tailwind. No database.
 - **No backend for the LLM:** the call goes **from the browser** straight to the provider, so the user's key never passes through our server.
   - Anthropic: `@anthropic-ai/sdk` with `dangerouslyAllowBrowser: true` (adds the `anthropic-dangerous-direct-browser-access` header).
-  - OpenAI (optional): `openai` SDK with `dangerouslyAllowBrowser: true`.
+  - OpenAI and xAI (Grok): both speak the Chat Completions API, called with plain `fetch` (only `Authorization` and `Content-Type` headers, to keep CORS preflights minimal) and a strict JSON-schema `response_format`. Defaults: `gpt-5.4-nano`, `grok-4.7`; any model ID can be typed in the UI.
   - The app can therefore be a **static export** (`output: 'export'`) and run on Vercel, Netlify or GitHub Pages.
 - **Key handling:**
   - password field and provider/model selector

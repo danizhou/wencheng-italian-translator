@@ -1,13 +1,23 @@
 import { lookup } from "../lookup";
 import { toTraditional } from "../opencc";
 import { transcribe, type Transcription } from "../pipeline";
-import type { CompleteTranslation } from "./anthropic";
+import { createAnthropicTranslator, type CompleteTranslation } from "./anthropic";
+import type { ProviderId } from "./models";
+import { createOpenAiCompatibleTranslator } from "./openaiCompatible";
 import { retryPrompt, userPrompt } from "./prompt";
 import type { Translation } from "./schema";
 
 export { createAnthropicTranslator } from "./anthropic";
+export { createOpenAiCompatibleTranslator } from "./openaiCompatible";
 export { LlmError, type LlmErrorKind } from "./errors";
-export { DEFAULT_MODEL, MODELS, findModel } from "./models";
+export * from "./models";
+
+/** The LLM call for the chosen provider. */
+export function createTranslator(provider: ProviderId, apiKey: string, modelId: string): CompleteTranslation {
+  return provider === "anthropic"
+    ? createAnthropicTranslator(apiKey, modelId)
+    : createOpenAiCompatibleTranslator(provider, apiKey, modelId);
+}
 
 export interface TranslateResult {
   translation: Translation;

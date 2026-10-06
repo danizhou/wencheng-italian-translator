@@ -10,7 +10,17 @@ import { CONFIDENCE, ERROR_MESSAGE } from "./labels";
 import { Button, Card, Chip, Han } from "./ui";
 import { keyStore } from "@/lib/keyStore";
 import { ipaToItalian } from "@/lib/ita";
-import { createAnthropicTranslator, DEFAULT_MODEL, findModel, LlmError, translateItalian } from "@/lib/llm";
+import {
+  createTranslator,
+  DEFAULT_MODEL,
+  DEFAULT_PROVIDER,
+  defaultModelFor,
+  isProvider,
+  LlmError,
+  PROVIDER_IDS,
+  translateItalian,
+  type ProviderId,
+} from "@/lib/llm";
 import type { Translation } from "@/lib/llm/schema";
 import type { SourcedReading } from "@/lib/lookup";
 import { transcribe } from "@/lib/pipeline";
@@ -27,6 +37,7 @@ interface Result {
 }
 
 export function Translator() {
+  const [provider, setProvider] = useState<ProviderId>(DEFAULT_PROVIDER);
   const [apiKey, setApiKey] = useState("");
   const [save, setSave] = useState(true);
   const [model, setModel] = useState(DEFAULT_MODEL);
@@ -39,35 +50,45 @@ export function Translator() {
   const [slow, setSlow] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  /** Key and model of a provider, from this device's storage */
+  const loadProvider = (p: ProviderId, saveEnabled: boolean) => {
+    setProvider(p);
+    setApiKey(saveEnabled ? (keyStore.loadSaved(p) ?? "") : "");
+    setModel(keyStore.loadModel(p) ?? defaultModelFor(p));
+  };
+
   // Restore preferences after hydration (the static HTML has no access to localStorage).
   useEffect(() => {
-    const saved = keyStore.loadSaved();
-    const savedModel = keyStore.loadModel();
     const saveEnabled = keyStore.loadSaveEnabled();
+    const savedProvider = keyStore.loadProvider();
     /* eslint-disable react-hooks/set-state-in-effect -- one-time read of browser-only storage */
     setSave(saveEnabled);
-    if (saved && saveEnabled) setApiKey(saved);
-    if (savedModel) setModel(findModel(savedModel).id);
+    loadProvider(isProvider(savedProvider) ? savedProvider : DEFAULT_PROVIDER, saveEnabled);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
+  const updateProvider = (p: ProviderId) => {
+    keyStore.saveProvider(p);
+    setError(null);
+    loadProvider(p, save);
+  };
   const updateKey = (key: string) => {
     setApiKey(key);
-    if (save) keyStore.save(key);
+    if (save) keyStore.save(provider, key);
   };
   const updateSave = (value: boolean) => {
     setSave(value);
     keyStore.setSaveEnabled(value);
-    if (value) keyStore.save(apiKey);
-    else keyStore.forget();
+    if (value) keyStore.save(provider, apiKey);
+    else keyStore.forgetAll(PROVIDER_IDS);
   };
   const clearKey = () => {
     setApiKey("");
-    keyStore.forget();
+    keyStore.forget(provider);
   };
   const updateModel = (id: string) => {
     setModel(id);
-    keyStore.saveModel(id);
+    if (id.trim()) keyStore.saveModel(provider, id.trim());
   };
 
   const showExample = async (ex: Example) => {
@@ -87,9 +108,13 @@ export function Translator() {
       setError(ERROR_MESSAGE.no_key);
       return;
     }
+    if (!model.trim()) {
+      setError("Scrivi l'ID del modello da usare.");
+      return;
+    }
     setLoading(true);
     try {
-      const r = await translateItalian(italian, createAnthropicTranslator(apiKey, model));
+      const r = await translateItalian(italian, createTranslator(provider, apiKey, model));
       setResult({ italian, zh: r.translation.zh, tokens: r.transcription.tokens, translation: r.translation, retried: r.retried });
     } catch (e) {
       setError(e instanceof LlmError ? ERROR_MESSAGE[e.kind] : ERROR_MESSAGE.other);
@@ -240,6 +265,8 @@ export function Translator() {
       )}
 
       <ApiKeyPanel
+        provider={provider}
+        onProvider={updateProvider}
         apiKey={apiKey}
         onApiKey={updateKey}
         save={save}

@@ -14,7 +14,7 @@ export type CompleteTranslation = (userMessage: string) => Promise<Translation>;
 export function createAnthropicTranslator(apiKey: string, modelId: string): CompleteTranslation {
   if (!apiKey.trim()) throw new LlmError("no_key", "Missing API key");
   const client = new Anthropic({ apiKey: apiKey.trim(), dangerouslyAllowBrowser: true, maxRetries: 1 });
-  const model = findModel(modelId);
+  const model = findModel(modelId, "anthropic");
 
   return async (userMessage) => {
     try {
