@@ -1,11 +1,11 @@
 import type { TokenSource } from "@/lib/segment";
 import type { LlmErrorKind } from "@/lib/llm";
 
-/** User-facing UI text (Italian). */
+/** User-facing UI text (Italian). Chinese in simplified characters. */
 export const SOURCE_LABEL: Record<TokenSource, string> = {
-  daxue: "Daxue (文成大嶨)",
-  wencheng: "Wencheng (文成)",
-  wenzhou: "Wenzhou (溫州) — non Wencheng",
+  daxue: "Daxue · 文成大峃",
+  wencheng: "Wencheng · 文成",
+  wenzhou: "Wenzhou · 温州 (non Wencheng)",
   override: "Correzione manuale",
   phrase: "Frase verificata",
 };
@@ -21,4 +21,11 @@ export const ERROR_MESSAGE: Record<LlmErrorKind, string> = {
   other: "Qualcosa è andato storto. Riprova.",
 };
 
-export const CONFIDENCE_LABEL = { alta: "sicura", media: "plausibile", bassa: "incerta" } as const;
+export const CONFIDENCE: Record<"alta" | "media" | "bassa", { label: string; tone: "success" | "accent" | "warn" }> = {
+  alta: { label: "Traduzione sicura", tone: "success" },
+  media: { label: "Traduzione plausibile", tone: "accent" },
+  bassa: { label: "Traduzione incerta", tone: "warn" },
+};
+
+export const GITHUB_PROFILE = "https://github.com/danizhou";
+export const GITHUB_REPO = "https://github.com/danizhou/wencheng-italian-traslator";

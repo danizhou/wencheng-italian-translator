@@ -1,10 +1,11 @@
 /**
- * The user's API key lives in memory by default. It is written to localStorage
- * only when the user ticks "remember on this device", and is never sent anywhere
- * except the provider's API.
+ * The user's API key is saved locally in this browser (localStorage) by default,
+ * with a visible notice and an opt-out. It is never sent anywhere except the
+ * provider's API.
  */
 const KEY = "wencheng.anthropicKey";
 const MODEL = "wencheng.model";
+const NO_SAVE = "wencheng.doNotSaveKey";
 
 function storage(): Storage | null {
   try {
@@ -34,10 +35,13 @@ function write(name: string, value: string | null) {
 }
 
 export const keyStore = {
-  /** A key remembered on this device, if any */
-  loadRemembered: (): string | null => read(KEY),
-  remember: (apiKey: string) => write(KEY, apiKey),
+  /** The key saved on this device, if any */
+  loadSaved: (): string | null => read(KEY),
+  save: (apiKey: string) => write(KEY, apiKey.trim() ? apiKey : null),
   forget: () => write(KEY, null),
+  /** Saving is on unless the user turned it off on this device */
+  loadSaveEnabled: (): boolean => read(NO_SAVE) !== "1",
+  setSaveEnabled: (enabled: boolean) => write(NO_SAVE, enabled ? null : "1"),
   loadModel: (): string | null => read(MODEL),
   saveModel: (model: string) => write(MODEL, model),
 };

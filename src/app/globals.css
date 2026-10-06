@@ -1,24 +1,92 @@
 @import "tailwindcss";
 
+/* Design system — Wencheng Translator: blue + yellow, Google Sans */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --bg: #f5f7fc;
+  --surface: #ffffff;
+  --surface-2: #eef2fb;
+  --border: #dbe2f0;
+  --text: #0e1a33;
+  --muted: #5b6886;
+  --primary: #1d4ed8;
+  --primary-hover: #1940b5;
+  --primary-soft: #e3ebff;
+  --on-primary: #ffffff;
+  --accent: #ffc72c;
+  --accent-soft: #fff4cc;
+  --on-accent: #2b2100;
+  --warn: #b45309;
+  --warn-soft: #fff1df;
+  --danger: #c62828;
+  --danger-soft: #fdecec;
+  --success: #1b7f4b;
+  --success-soft: #e3f6ec;
+  --appbar: #13308f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0a1226;
+    --surface: #111c36;
+    --surface-2: #182649;
+    --border: #26375f;
+    --text: #eef2ff;
+    --muted: #9aa8c7;
+    --primary: #6f9bff;
+    --primary-hover: #8cb0ff;
+    --primary-soft: #1b2c57;
+    --on-primary: #0a1226;
+    --accent: #ffd34d;
+    --accent-soft: #3a3113;
+    --on-accent: #2b2100;
+    --warn: #f5a524;
+    --warn-soft: #3a2a12;
+    --danger: #ff8a80;
+    --danger-soft: #3d1d22;
+    --success: #5fd49a;
+    --success-soft: #133326;
+    --appbar: #0d1a3d;
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-appbar: var(--appbar);
+  --font-sans: var(--font-google-sans), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: var(--font-google-sans-code), ui-monospace, monospace;
+  --font-han: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+/* Chinese is always shown in simplified glyphs */
+:lang(zh-Hans) {
+  font-family: var(--font-han);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

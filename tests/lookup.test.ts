@@ -77,6 +77,11 @@ describe("character overrides", () => {
     expect(l("嘅")).toEqual({ char: "嘅", reading: { ipa: "ɡe0", tone: 0, source: "override" }, alts: [] });
   });
 
+  it("accepts simplified keys for traditional characters", () => {
+    const l = createLookup(data, { chars: { 我: { ipa: "ŋu4" }, 谢: { ipa: "zia6" } }, phrases: {} });
+    expect(l("謝")?.reading).toMatchObject({ ipa: "zia6", source: "override" });
+  });
+
   it("rejects an override without a tone", () => {
     expect(() => createLookup(data, { chars: { 我: { ipa: "ŋu" } }, phrases: {} })).toThrow(/tone/);
   });

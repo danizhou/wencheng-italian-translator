@@ -16,7 +16,7 @@ export function ExampleChips({ onPick, disabled }: { onPick: (example: Example) 
           type="button"
           disabled={disabled}
           onClick={() => onPick(ex)}
-          className="rounded-full border border-zinc-300 px-3 py-1 text-sm hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="rounded-full border border-border bg-surface-2 px-3.5 py-1.5 text-sm font-medium text-text transition hover:border-primary hover:bg-primary-soft disabled:opacity-50"
         >
           {ex.it}
         </button>

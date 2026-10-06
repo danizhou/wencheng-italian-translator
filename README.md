@@ -10,7 +10,9 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 2. Per tradurre frasi nuove inserisci la tua API key Anthropic nel riquadro "Chiave API" (la crei su [console.anthropic.com](https://console.anthropic.com/settings/keys)).
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (Daxue, Wencheng o Wenzhou).
 
-La chiave va solo dal tuo browser ad `api.anthropic.com`: il sito è statico, non ha un server e non la vede mai. Di default resta in memoria; con "Ricorda su questo dispositivo" viene salvata solo nel `localStorage` del tuo browser. Modello predefinito: Claude Haiku 4.5 (veloce ed economico); si può scegliere anche Sonnet 5.5 o Opus 5.5.
+La chiave è salvata solo in locale, nel `localStorage` del tuo browser, e va solo ad `api.anthropic.com` quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
+
+Il cinese nel sito è sempre in caratteri semplificati. Le tabelle restano in tradizionale e vengono convertite solo per la visualizzazione (`src/data/simplified.json`, generato con `npm run build:simplified`). Modello predefinito: Claude Haiku 4.5 (veloce ed economico); si può scegliere anche Sonnet 5.5 o Opus 5.5.
 
 ## Come funziona
 
@@ -30,7 +32,7 @@ Le correzioni manuali vanno in `src/data/overrides.json` (non modificare `wenche
 }
 ```
 
-Nel sito, il riquadro delle alternative di ogni sillaba ha uno snippet pronto da copiare. Nelle `phrases` ci vuole una sillaba per ogni carattere.
+Nel sito, il riquadro delle alternative di ogni sillaba ha uno snippet pronto da copiare. Nelle `phrases` ci vuole una sillaba per ogni carattere. Le chiavi si possono scrivere in semplificato o in tradizionale.
 
 ## Dati
 

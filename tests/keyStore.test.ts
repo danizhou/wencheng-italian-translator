@@ -14,14 +14,30 @@ function fakeStorage() {
 describe("keyStore", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it("stores nothing until remember() is called", () => {
+  it("saves the key locally, and forgets it", () => {
     const s = fakeStorage();
     vi.stubGlobal("window", { localStorage: s });
-    expect(keyStore.loadRemembered()).toBeNull();
-    keyStore.remember("sk-ant-x");
-    expect(keyStore.loadRemembered()).toBe("sk-ant-x");
+    expect(keyStore.loadSaved()).toBeNull();
+    keyStore.save("sk-ant-x");
+    expect(keyStore.loadSaved()).toBe("sk-ant-x");
     keyStore.forget();
     expect(s.data.size).toBe(0);
+  });
+
+  it("does not store an empty key", () => {
+    const s = fakeStorage();
+    vi.stubGlobal("window", { localStorage: s });
+    keyStore.save("  ");
+    expect(s.data.size).toBe(0);
+  });
+
+  it("saving is on by default and the opt-out is remembered", () => {
+    vi.stubGlobal("window", { localStorage: fakeStorage() });
+    expect(keyStore.loadSaveEnabled()).toBe(true);
+    keyStore.setSaveEnabled(false);
+    expect(keyStore.loadSaveEnabled()).toBe(false);
+    keyStore.setSaveEnabled(true);
+    expect(keyStore.loadSaveEnabled()).toBe(true);
   });
 
   it("does not throw when storage is blocked", () => {
@@ -30,11 +46,11 @@ describe("keyStore", () => {
         throw new Error("SecurityError");
       },
     });
-    expect(() => keyStore.remember("sk-ant-x")).not.toThrow();
-    expect(keyStore.loadRemembered()).toBeNull();
+    expect(() => keyStore.save("sk-ant-x")).not.toThrow();
+    expect(keyStore.loadSaved()).toBeNull();
   });
 
   it("works without a window (static build)", () => {
-    expect(keyStore.loadRemembered()).toBeNull();
+    expect(keyStore.loadSaved()).toBeNull();
   });
 });

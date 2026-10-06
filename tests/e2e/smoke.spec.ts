@@ -24,6 +24,28 @@ test("a precomputed example works without a key and shows alternatives", async (
   await expect(page.getByTestId("alts")).toBeVisible();
 });
 
+test("shows Chinese in simplified characters only", async ({ page }) => {
+  await page.goto("./");
+  await page.getByRole("button", { name: "Hai mangiato?" }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("gni va ci cu nau");
+  const text = await page.locator("body").innerText();
+  expect(text).toContain("你饭吃过冇");
+  // Traditional forms that must never appear on the page
+  for (const trad of ["飯", "過", "錢", "謝", "蘭", "話", "嶨", "溫"]) expect(text).not.toContain(trad);
+});
+
+test("saves the key locally and keeps it after a reload", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.getByText("La chiave è salvata solo in locale")).toBeVisible();
+  await page.getByPlaceholder("sk-ant-…").fill("sk-ant-saved");
+  await page.reload();
+  await expect(page.getByPlaceholder("sk-ant-…")).toHaveValue("sk-ant-saved");
+
+  await page.getByRole("button", { name: "Cancella chiave" }).click();
+  await page.reload();
+  await expect(page.getByPlaceholder("sk-ant-…")).toHaveValue("");
+});
+
 test("Traduci without a key asks for it and calls no provider", async ({ page }) => {
   const requests = recordRequests(page);
   await page.goto("./");
