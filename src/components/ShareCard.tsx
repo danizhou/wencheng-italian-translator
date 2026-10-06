@@ -2,6 +2,7 @@
 
 import { forwardRef } from "react";
 import type { Token } from "@/lib/segment";
+import { toSimplified } from "@/lib/simplified";
 
 interface Props {
   italian: string;
@@ -9,23 +10,30 @@ interface Props {
   ita: string;
 }
 
-/** The card exported as PNG for social media. Fixed colors so the image looks the same in light and dark mode. */
+const HAN_FONT = '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", sans-serif';
+
+/** The card exported as PNG. Fixed brand colors so it looks the same in light and dark mode. */
 export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard({ italian, tokens, ita }, ref) {
   const han = tokens.filter((t) => t.kind === "han");
   return (
-    <div ref={ref} className="w-[540px] rounded-2xl bg-[#111827] p-8 text-white" style={{ fontFamily: "system-ui, sans-serif" }}>
-      <p className="text-sm uppercase tracking-widest text-[#9ca3af]">Italiano → Wenchenghua</p>
-      <p className="mt-2 text-2xl font-semibold">{italian}</p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        {han.map((t, i) => (
-          <div key={i} className="flex flex-col items-center">
-            <span className="text-4xl">{t.text}</span>
-            <span className="mt-1 text-lg font-semibold text-[#fcd34d]">{t.ita}</span>
-          </div>
-        ))}
+    <div ref={ref} className="w-[560px] overflow-hidden rounded-3xl bg-[#13308f] text-white" style={{ fontFamily: "var(--font-google-sans), sans-serif" }}>
+      <div className="flex items-center gap-3 bg-[#0d1a3d] px-8 py-4">
+        <span lang="zh-Hans" className="flex size-9 items-center justify-center rounded-lg bg-[#ffc72c] text-xl font-bold text-[#13308f]" style={{ fontFamily: HAN_FONT }}>文</span>
+        <span className="text-sm font-medium tracking-wide text-[#c9d6ff]">Traduttore Wencheng · Italiano → 文成话</span>
       </div>
-      <p className="mt-6 text-xl text-[#fcd34d]">{ita}</p>
-      <p className="mt-6 text-xs text-[#6b7280]">Pronuncia approssimata · dati MCPDict (文成大嶨)</p>
+      <div className="px-8 py-7">
+        <p className="text-2xl font-semibold">{italian}</p>
+        <div className="mt-6 flex flex-wrap gap-4">
+          {han.map((t, i) => (
+            <div key={i} className="flex flex-col items-center">
+              <span lang="zh-Hans" className="text-5xl" style={{ fontFamily: HAN_FONT }}>{toSimplified(t.text)}</span>
+              <span className="mt-2 text-lg font-semibold text-[#ffc72c]">{t.ita}</span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-7 rounded-xl bg-[#ffc72c] px-4 py-3 text-2xl font-bold text-[#13308f]">{ita}</p>
+        <p className="mt-5 text-xs text-[#9fb3ef]">Pronuncia approssimata · dati MCPDict (文成大峃)</p>
+      </div>
     </div>
   );
 });

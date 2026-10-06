@@ -10,7 +10,8 @@
     "test": "vitest",
     "build:data": "node scripts/build-data.ts",
     "check:data": "node scripts/check-data.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:simplified": "node scripts/build-simplified.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

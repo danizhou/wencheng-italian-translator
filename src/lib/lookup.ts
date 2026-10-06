@@ -1,6 +1,7 @@
 import type { Reading, Source, WenchengData } from "./data-types";
 import wenchengJson from "@/data/wencheng.json";
 import overridesJson from "@/data/overrides.json";
+import { toSimplified } from "./simplified";
 
 export type LookupSource = Source | "override";
 
@@ -27,16 +28,17 @@ export function parseIpa(ipa: string): Reading {
 }
 
 export function createLookup(data: WenchengData, overrides: Overrides) {
+  // Keyed by simplified form, so overrides.json may use either script
   const charOverrides = new Map(
     Object.entries(overrides.chars).map(([char, o]) => [
-      char,
+      toSimplified(char),
       { ...parseIpa(o.ipa), ...(o.note ? { gloss: o.note } : {}), source: "override" as const },
     ]),
   );
 
   return function lookup(char: string): LookupResult | null {
     const entry = data.chars[char];
-    const override = charOverrides.get(char);
+    const override = charOverrides.get(toSimplified(char));
     if (!entry && !override) return null;
 
     const all: SourcedReading[] = [];

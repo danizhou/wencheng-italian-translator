@@ -1,6 +1,7 @@
 import type { LookupResult, Overrides, SourcedReading } from "./lookup";
 import type { Source } from "./data-types";
 import { ipaToItalian } from "./ita";
+import { toSimplified } from "./simplified";
 
 export type TokenSource = Source | "override" | "phrase";
 
@@ -31,7 +32,8 @@ export function createSegmenter(lookup: (char: string) => LookupResult | null, p
     if (syllables.length !== chars.length) {
       throw new Error(`Phrase override ${zh}: ${chars.length} characters but ${syllables.length} syllables in "${p.ita}"`);
     }
-    return { chars, syllables };
+    // Matched in simplified form, so overrides.json may use either script
+    return { chars, match: chars.map(toSimplified), syllables };
   });
   phraseList.sort((a, b) => b.chars.length - a.chars.length);
 
@@ -54,9 +56,9 @@ export function createSegmenter(lookup: (char: string) => LookupResult | null, p
     const chars = [...text];
     const tokens: Token[] = [];
     for (let i = 0; i < chars.length; ) {
-      const phrase = phraseList.find((p) => p.chars.every((c, j) => chars[i + j] === c));
+      const phrase = phraseList.find((p) => p.match.every((c, j) => i + j < chars.length && toSimplified(chars[i + j]) === c));
       if (phrase) {
-        phrase.chars.forEach((c, j) => tokens.push(hanToken(c, phrase.syllables[j])));
+        phrase.chars.forEach((_, j) => tokens.push(hanToken(chars[i + j], phrase.syllables[j])));
         i += phrase.chars.length;
       } else if (HAN.test(chars[i])) {
         tokens.push(hanToken(chars[i++]));

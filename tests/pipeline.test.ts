@@ -76,6 +76,13 @@ describe("segmenter", () => {
     expect(italianLine(segment("謝謝謝"))).toBe("sci sci x");
   });
 
+  it("matches phrase overrides written in simplified characters", () => {
+    const segment = createSegmenter(lookup, { 谢谢: { ita: "sci sci" } });
+    const tokens = segment("謝謝");
+    expect(italianLine(tokens)).toBe("sci sci");
+    expect(tokens.map((t) => t.text).join("")).toBe("謝謝");
+  });
+
   it("rejects a phrase override whose syllables do not match its characters", () => {
     expect(() => createSegmenter(lookup, { 謝謝: { ita: "zi" } })).toThrow(/2 characters but 1 syllables/);
   });
