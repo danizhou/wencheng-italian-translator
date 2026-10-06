@@ -1,0 +1,195 @@
+{
+  "_doc": "Ready-made everyday phrases for home and family life, shown in the phrase library. zh in traditional characters (shown simplified), using Wu words where known (落雨, 夜飯, 鎖匙, 衣裳, 鈔票, 爻, 危險). 'verified': from the plan's reference table; the others were written without a native speaker and are marked 'da verificare' in the UI. 'pick': per-character reading to use instead of the default (must exist in the tables). Every change needs a test in tests/phrases.test.ts.",
+  "categories": [
+    {
+      "id": "tavola",
+      "label": "A tavola"
+    },
+    {
+      "id": "casa",
+      "label": "In casa"
+    },
+    {
+      "id": "fuori",
+      "label": "Uscire e rientrare"
+    },
+    {
+      "id": "tempo",
+      "label": "Il tempo"
+    },
+    {
+      "id": "spesa",
+      "label": "Soldi e spesa"
+    },
+    {
+      "id": "risposte",
+      "label": "Risposte veloci"
+    }
+  ],
+  "phrases": [
+    {
+      "id": "hai-mangiato",
+      "category": "tavola",
+      "it": "Hai mangiato?",
+      "zh": "你飯吃過冇",
+      "verified": true
+    },
+    {
+      "id": "a-tavola",
+      "category": "tavola",
+      "it": "A tavola, si mangia!",
+      "zh": "吃飯爻"
+    },
+    {
+      "id": "lavati-le-mani",
+      "category": "tavola",
+      "it": "Lavati le mani",
+      "zh": "手洗洗"
+    },
+    {
+      "id": "cena",
+      "category": "tavola",
+      "it": "Cosa mangiamo stasera?",
+      "zh": "夜飯吃甚物"
+    },
+    {
+      "id": "piatti",
+      "category": "tavola",
+      "it": "Hai lavato i piatti?",
+      "zh": "碗洗爻冇"
+    },
+    {
+      "id": "che-fai",
+      "category": "casa",
+      "it": "Che fai?",
+      "zh": "你做甚物",
+      "verified": true
+    },
+    {
+      "id": "chiudi-la-porta",
+      "category": "casa",
+      "it": "Chiudi la porta",
+      "zh": "門關起"
+    },
+    {
+      "id": "accendi-la-luce",
+      "category": "casa",
+      "it": "Accendi la luce",
+      "zh": "燈開開"
+    },
+    {
+      "id": "spegni-la-tv",
+      "category": "casa",
+      "it": "Spegni la TV",
+      "zh": "電視關爻"
+    },
+    {
+      "id": "aspetta",
+      "category": "casa",
+      "it": "Aspetta un attimo",
+      "zh": "等下"
+    },
+    {
+      "id": "esco",
+      "category": "fuori",
+      "it": "Esco",
+      "zh": "我走爻"
+    },
+    {
+      "id": "sono-tornato",
+      "category": "fuori",
+      "it": "Sono tornato",
+      "zh": "歸來爻"
+    },
+    {
+      "id": "chiavi",
+      "category": "fuori",
+      "it": "Hai preso le chiavi?",
+      "zh": "鎖匙帶起冇"
+    },
+    {
+      "id": "copriti",
+      "category": "fuori",
+      "it": "Mettiti più vestiti",
+      "zh": "衣裳穿多些"
+    },
+    {
+      "id": "vado-a-milano",
+      "category": "fuori",
+      "it": "Vado a Milano",
+      "zh": "我去米蘭",
+      "verified": true
+    },
+    {
+      "id": "piove",
+      "category": "tempo",
+      "it": "Piove",
+      "zh": "落雨爻"
+    },
+    {
+      "id": "fa-freddo",
+      "category": "tempo",
+      "it": "Oggi fa molto freddo",
+      "zh": "今日危險冷",
+      "pick": {
+        "日": "ne8"
+      }
+    },
+    {
+      "id": "fa-caldo",
+      "category": "tempo",
+      "it": "Oggi fa molto caldo",
+      "zh": "今日危險熱",
+      "pick": {
+        "日": "ne8"
+      }
+    },
+    {
+      "id": "non-ho-soldi",
+      "category": "spesa",
+      "it": "Non ho soldi",
+      "zh": "我冇錢",
+      "verified": true
+    },
+    {
+      "id": "quanto-costa",
+      "category": "spesa",
+      "it": "Quanto costa?",
+      "zh": "幾多鈔票"
+    },
+    {
+      "id": "troppo-caro",
+      "category": "spesa",
+      "it": "Troppo caro",
+      "zh": "忒貴爻"
+    },
+    {
+      "id": "grazie",
+      "category": "risposte",
+      "it": "Grazie",
+      "zh": "謝謝",
+      "verified": true
+    },
+    {
+      "id": "ho-capito",
+      "category": "risposte",
+      "it": "Ho capito",
+      "zh": "曉得爻"
+    },
+    {
+      "id": "non-lo-so",
+      "category": "risposte",
+      "it": "Non lo so",
+      "zh": "我否曉得"
+    },
+    {
+      "id": "non-fa-niente",
+      "category": "risposte",
+      "it": "Non fa niente",
+      "zh": "否要緊",
+      "pick": {
+        "要": "ʔyø5"
+      }
+    }
+  ]
+}

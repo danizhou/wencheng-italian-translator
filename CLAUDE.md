@@ -7,6 +7,7 @@
 - The IPA → Italian rules live in src/data/ita-rules.json; every change needs a test in tests/ita.test.ts.
 - The IPA → Vietnamese respelling (read aloud by a Vietnamese voice) lives in src/data/vi-rules.json; every change needs a test in tests/vi.test.ts.
 - wencheng.json is generated: do not edit it by hand, use overrides.json.
+- Ready-made phrases live in src/data/phrases.json (traditional characters; 'pick' selects a non-default reading, 'verified' only after a native speaker or the plan's table confirms it); every change needs a test in tests/phrases.test.ts.
 - Source priority: overrides > Daxue (文成大嶨) > Wencheng (文成) > Wenzhou (溫州).
 - Traditional characters internally; convert LLM output with opencc s2t.
 - Everything shown to the user is simplified Chinese: pass it through toSimplified (src/lib/simplified.ts) and mark it lang="zh-Hans". simplified.json is generated (npm run build:simplified).
