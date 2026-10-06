@@ -27,6 +27,7 @@ import { transcribe } from "@/lib/pipeline";
 import { italianLine, type Token } from "@/lib/segment";
 import { toSimplified } from "@/lib/simplified";
 import { vietnameseLine } from "@/lib/vi";
+import { audioFileName, isVoiceStored, saveBlob, synthesizeVietnamese, VOICE_SIZE_MB, type AudioStage } from "@/lib/audioFile";
 
 interface Result {
   italian: string;
@@ -49,6 +50,8 @@ export function Translator() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [slow, setSlow] = useState(false);
+  const [audio, setAudio] = useState<AudioStage | null>(null);
+  const [voiceStored, setVoiceStored] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
 
   /** Key and model of a provider, from this device's storage */
@@ -67,6 +70,18 @@ export function Translator() {
     loadProvider(isProvider(savedProvider) ? savedProvider : DEFAULT_PROVIDER, saveEnabled);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
+
+  const hasResult = result !== null;
+  useEffect(() => {
+    if (!hasResult) return;
+    let cancelled = false;
+    void isVoiceStored().then((stored) => {
+      if (!cancelled) setVoiceStored(stored);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasResult]);
 
   const updateProvider = (p: ProviderId) => {
     keyStore.saveProvider(p);
@@ -162,6 +177,25 @@ export function Translator() {
     a.click();
   };
 
+  const downloadAudio = async () => {
+    if (!result || audio) return;
+    setError(null);
+    try {
+      const wav = await synthesizeVietnamese(vietnameseLine(result.tokens), setAudio);
+      saveBlob(wav, audioFileName(result.italian));
+      setVoiceStored(true);
+    } catch {
+      setError("Non sono riuscito a creare l'audio: controlla la connessione (la prima volta serve scaricare la voce) e riprova.");
+    } finally {
+      setAudio(null);
+    }
+  };
+
+  const audioLabel =
+    audio?.stage === "voice" ? `Scarico la voce… ${Math.round(audio.fraction * 100)}%`
+    : audio?.stage === "audio" ? "Creo l'audio…"
+    : "Scarica audio";
+
   const wenzhouCount = result?.tokens.filter((t) => t.source === "wenzhou").length ?? 0;
   const missingCount = result?.tokens.filter((t) => t.kind === "han" && t.source === null).length ?? 0;
 
@@ -256,7 +290,15 @@ export function Translator() {
               <Button variant="primary" onClick={() => void copy("ita")}>{copied === "ita" ? "Copiato!" : "Copia"}</Button>
               <Button onClick={() => void copy("all")}>{copied === "all" ? "Copiato!" : "Copia tutto"}</Button>
               <Button onClick={() => void exportImage()}>Esporta immagine</Button>
+              <Button onClick={() => void downloadAudio()} disabled={audio !== null || !viLine} aria-live="polite">
+                {audioLabel}
+              </Button>
             </div>
+            {!voiceStored && (
+              <p className="-mt-2 text-xs text-muted">
+                “Scarica audio” crea un file WAV con una voce vietnamita. La prima volta scarica la voce ({VOICE_SIZE_MB} MB), poi resta salvata nel browser.
+              </p>
+            )}
           </div>
 
           {/* Rendered off-screen so html-to-image can capture it */}
