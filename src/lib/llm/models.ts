@@ -1,5 +1,5 @@
 /** The only place providers and model IDs are listed. */
-export type ProviderId = "anthropic" | "openai" | "xai";
+export type ProviderId = "anthropic" | "openai" | "xai" | "groq";
 
 export interface ProviderInfo {
   id: ProviderId;
@@ -33,6 +33,13 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     consoleUrl: "https://console.x.ai",
     keyPlaceholder: "xai-…",
   },
+  groq: {
+    id: "groq",
+    label: "Groq (GPT-OSS)",
+    host: "api.groq.com",
+    consoleUrl: "https://console.groq.com/keys",
+    keyPlaceholder: "gsk_…",
+  },
 };
 
 export const PROVIDER_IDS = Object.keys(PROVIDERS) as ProviderId[];
@@ -55,6 +62,9 @@ export const MODELS: ModelOption[] = [
   { id: "gpt-5.4-nano", provider: "openai", label: "GPT-5.4 nano — veloce ed economico", fallbacks: false },
   { id: "gpt-5.4-mini", provider: "openai", label: "GPT-5.4 mini — più accurato", fallbacks: false },
   { id: "grok-4.7", provider: "xai", label: "Grok 4.7", fallbacks: false },
+  // Groq: strict JSON-schema output is supported only on some models (GPT-OSS, Qwen)
+  { id: "openai/gpt-oss-120b", provider: "groq", label: "GPT-OSS 120B — più accurato", fallbacks: false },
+  { id: "openai/gpt-oss-20b", provider: "groq", label: "GPT-OSS 20B — più veloce", fallbacks: false },
 ];
 
 export const DEFAULT_PROVIDER: ProviderId = "anthropic";

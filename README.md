@@ -10,9 +10,10 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 2. Per tradurre frasi nuove scegli un provider nel riquadro "Chiave API" e inserisci la tua API key:
    - **Anthropic (Claude)**: [console.anthropic.com](https://console.anthropic.com/settings/keys), modello predefinito Claude Haiku 4.5;
    - **OpenAI (GPT)**: [platform.openai.com](https://platform.openai.com/api-keys), modello predefinito GPT-5.4 nano;
-   - **xAI (Grok)**: [console.x.ai](https://console.x.ai), modello predefinito Grok 4.7.
+   - **xAI (Grok)**: [console.x.ai](https://console.x.ai), modello predefinito Grok 4.7;
+   - **Groq**: [console.groq.com](https://console.groq.com/keys), modello predefinito GPT-OSS 120B (in alternativa GPT-OSS 20B, più veloce).
 
-   Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider. Tutte e tre le API sono a pagamento a consumo (con i modelli predefiniti, meno di un centesimo per frase); l'app gratuita di Grok non include l'API.
+   Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider (con Groq solo i modelli che supportano lo "structured output" rigoroso, come GPT-OSS). Anthropic, OpenAI e xAI sono a pagamento a consumo (con i modelli predefiniti, meno di un centesimo per frase); l'app gratuita di Grok non include l'API. Groq ha anche un piano gratuito, con un limite di richieste al giorno più che sufficiente per questa app.
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (per Wencheng: Daxue, Wencheng; per Qingtian: Wenxi, Beishan, Qingtian; per entrambi: Wenzhou).
 4. Premi **Ascolta** per sentire la pronuncia letta da una voce vietnamita, con i toni (spunta "Lento" per rallentare). Nel riquadro di una sillaba, l'altoparlante fa lo stesso per la singola sillaba.
 
@@ -20,7 +21,7 @@ Nessuna voce sintetica parla i dialetti di Wencheng o di Qingtian. Il vietnamita
 
 Le registrazioni di un parlante sono il passo successivo (vedi `PLAN.md`, §12).
 
-La chiave è salvata solo in locale, nel `localStorage` del tuo browser (una per provider), e va solo all'API di quel provider (`api.anthropic.com`, `api.openai.com` o `api.x.ai`) quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
+La chiave è salvata solo in locale, nel `localStorage` del tuo browser (una per provider), e va solo all'API di quel provider (`api.anthropic.com`, `api.openai.com`, `api.x.ai` o `api.groq.com`) quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
 
 Il cinese nel sito è sempre in caratteri semplificati. Le tabelle restano in tradizionale e vengono convertite solo per la visualizzazione (`src/data/simplified.json`, generato con `npm run build:simplified`). 
 
