@@ -19,3 +19,19 @@ jobs:
       - run: npm test -- --run          # Vitest: ita, lookup, pipeline (LLM mocked)
       - run: npm run check:data         # checks wencheng.json is valid and has > 3000 characters
       - run: npm run build              # next build with output: 'export'
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run build
+        env:
+          PAGES_BASE_PATH: /wencheng-italian-traslator
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e        # smoke test on the static export, no real API key
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with: { name: playwright-report, path: playwright-report }

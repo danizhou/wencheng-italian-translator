@@ -4,6 +4,43 @@ Italiano → Wenchenghua (Daxue), con la pronuncia scritta "all'italiana". Web a
 
 Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 
+## Come si usa
+
+1. Apri il sito e prova un esempio: funziona anche senza chiave.
+2. Per tradurre frasi nuove inserisci la tua API key Anthropic nel riquadro "Chiave API" (la crei su [console.anthropic.com](https://console.anthropic.com/settings/keys)).
+3. Tocca una sillaba per vedere le pronunce alternative e la fonte (Daxue, Wencheng o Wenzhou).
+
+La chiave va solo dal tuo browser ad `api.anthropic.com`: il sito è statico, non ha un server e non la vede mai. Di default resta in memoria; con "Ricorda su questo dispositivo" viene salvata solo nel `localStorage` del tuo browser. Modello predefinito: Claude Haiku 4.5 (veloce ed economico); si può scegliere anche Sonnet 5.5 o Opus 5.5.
+
+## Come funziona
+
+1. Il modello traduce la frase italiana nel cinese come si parla a Wenzhou/Wencheng (una sola chiamata, più al massimo un nuovo tentativo se usa caratteri che non sono nelle tabelle di Wencheng).
+2. Il testo viene convertito in caratteri tradizionali (opencc).
+3. Ogni carattere viene cercato nelle tabelle, con priorità: correzioni manuali > Daxue (文成大嶨) > Wencheng (文成) > Wenzhou (溫州).
+4. La pronuncia IPA diventa lettere italiane con le regole di `src/data/ita-rules.json`.
+
+## Correggere una pronuncia
+
+Le correzioni manuali vanno in `src/data/overrides.json` (non modificare `wencheng.json`, che è generato):
+
+```json
+{
+  "chars":   { "謝": { "ipa": "zi6", "note": "verificato" } },
+  "phrases": { "你飯吃過冇": { "ita": "gni va ci cu nau", "note": "frase tipica" } }
+}
+```
+
+Nel sito, il riquadro delle alternative di ogni sillaba ha uno snippet pronto da copiare. Nelle `phrases` ci vuole una sillaba per ogni carattere.
+
+## Dati
+
+`src/data/wencheng.json` si rigenera a mano dalle tabelle di [MCPDict](https://github.com/osfans/MCPDict):
+
+```bash
+npm run build:data   # scarica le tabelle e scrive wencheng.json
+npm run check:data   # controlla che il file sia valido
+```
+
 ## Sviluppo
 
 ```bash
@@ -12,6 +49,7 @@ npm run dev        # http://localhost:3000
 npm test           # Vitest (watch); in CI: npm test -- --run
 npm run lint
 npm run build      # export statico in out/
+npm run test:e2e   # smoke test Playwright sulla build in out/
 ```
 
 ## Pubblicazione su GitHub Pages
