@@ -85,12 +85,15 @@ test("translates with a key (provider mocked) and never sends the key to our ori
   }
 });
 
-test("reads the Italian spelling aloud with an Italian voice", async ({ page }) => {
+test("reads the characters with a Chinese voice and the spelling with an Italian voice", async ({ page }) => {
   // Stub speechSynthesis: headless browsers have no voices
   await page.addInitScript(() => {
     const spoken: { text: string; lang: string; rate: number; voice: string | null }[] = [];
     (window as unknown as { __spoken: typeof spoken }).__spoken = spoken;
-    const voices = [{ lang: "it-IT", name: "Italiano", localService: true }];
+    const voices = [
+      { lang: "it-IT", name: "Italiano", localService: true },
+      { lang: "zh-CN", name: "Mandarino", localService: true },
+    ];
     class Utterance {
       lang = "";
       rate = 1;
@@ -118,13 +121,19 @@ test("reads the Italian spelling aloud with an Italian voice", async ({ page }) 
   await page.getByRole("button", { name: "Vado a Milano" }).click();
   await expect(page.getByTestId("ita-line")).toHaveText("ng ciü meng la");
   await page.getByRole("button", { name: "Ascolta", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Ascolta", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Lettere", exact: true }).click();
 
   await page.getByTestId("syllables").getByRole("button").nth(1).click();
-  await page.getByRole("button", { name: "Ascolta la sillaba: ciü" }).click();
+  await page.getByRole("button", { name: "Ascolta il carattere: 去" }).click();
+  await page.getByRole("button", { name: "Ascolta le lettere: ciü" }).click();
 
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken.length)).toBe(4);
   const spoken = await page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken);
   expect(spoken).toEqual([
+    { text: "我去米兰", lang: "zh-CN", rate: 0.9, voice: "Mandarino" },
     { text: "eng ciu meng la", lang: "it-IT", rate: 0.9, voice: "Italiano" },
+    { text: "去", lang: "zh-CN", rate: 0.6, voice: "Mandarino" },
     { text: "ciu", lang: "it-IT", rate: 0.6, voice: "Italiano" },
   ]);
 });

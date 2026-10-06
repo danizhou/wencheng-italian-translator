@@ -223,7 +223,8 @@ export function Translator() {
                   <input type="checkbox" className="size-3.5 accent-[var(--primary)]" checked={slow} onChange={(e) => setSlow(e.target.checked)} />
                   Lento
                 </label>
-                <SpeakButton text={ita} slow={slow} />
+                <SpeakButton text={zhShown} lang="zh" slow={slow} label="Ascolta" />
+                <SpeakButton text={ita} lang="it" slow={slow} label="Lettere" variant="secondary" />
               </div>
             </div>
 
@@ -246,7 +247,7 @@ export function Translator() {
               {wenzhouCount > 0 && <li className="text-warn">Le sillabe evidenziate vengono dal dialetto di Wenzhou città, non di Wencheng.</li>}
               {missingCount > 0 && <li className="text-danger">I caratteri in rosso non sono in nessuna tabella.</li>}
               <li>Tocca una sillaba per vedere le pronunce alternative.</li>
-              <li>L&apos;audio è una voce italiana che legge le lettere: non è la voce di un parlante di Wencheng.</li>
+              <li>“Ascolta” usa una voce cinese in mandarino che legge i caratteri; “Lettere” una voce italiana che legge la trascrizione. Nessuna delle due è il dialetto di Wencheng.</li>
               <SpeechNotice />
             </ul>
 
