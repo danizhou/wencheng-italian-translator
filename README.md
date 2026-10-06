@@ -14,9 +14,9 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 
    Con "Altro modello…" puoi scrivere a mano l'ID di qualsiasi modello del provider. Tutte e tre le API sono a pagamento a consumo (con i modelli predefiniti, meno di un centesimo per frase); l'app gratuita di Grok non include l'API.
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (Daxue, Wencheng o Wenzhou).
-4. Premi **Ascolta** per sentire la pronuncia (spunta "Lento" per rallentarla), oppure l'altoparlante nel riquadro di una sillaba.
+4. Premi **Ascolta** per sentire i caratteri letti da una voce cinese, oppure **Lettere** per sentire la trascrizione letta da una voce italiana (spunta "Lento" per rallentare). Nel riquadro di una sillaba, i pulsanti **中** e **IT** fanno lo stesso per la singola sillaba.
 
-L'audio usa la voce italiana del tuo browser (Web Speech API): funziona senza chiave e senza connessione, ma è una voce italiana che legge le lettere, non un parlante di Wencheng. Se il dispositivo non ha una voce italiana viene usata quella predefinita. Le registrazioni di un parlante sono il passo successivo (vedi `PLAN.md`, §12).
+L'audio usa le voci già presenti nel dispositivo (Web Speech API): funziona senza chiave e senza connessione. La voce cinese parla **mandarino**, quindi suona cinese ma non è il dialetto di Wencheng; la voce italiana legge le lettere. Se manca la voce cinese, aggiungila nelle impostazioni di sintesi vocale del telefono o del computer. Le registrazioni di un parlante sono il passo successivo (vedi `PLAN.md`, §12).
 
 La chiave è salvata solo in locale, nel `localStorage` del tuo browser (una per provider), e va solo all'API di quel provider (`api.anthropic.com`, `api.openai.com` o `api.x.ai`) quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
 

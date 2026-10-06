@@ -1,13 +1,19 @@
 /**
- * Reads the Italian spelling aloud with the browser's own speech synthesis
- * (Web Speech API). No network, no key. This is the "meme" pronunciation:
- * an Italian voice reading "gni va ci cu nau", not a Wencheng speaker.
+ * Reads the result aloud with the browser's own speech synthesis (Web Speech
+ * API). No network, no key. Two voices:
+ * - Chinese: a Mandarin voice reads the characters. Sounds Chinese, but it is
+ *   Mandarin, not Wencheng.
+ * - Italian: an Italian voice reads the Italian spelling ("gni va ci cu nau").
  */
+
+export type SpeechLang = "zh" | "it";
+
+const LANG_TAG: Record<SpeechLang, string> = { zh: "zh-CN", it: "it-IT" };
 
 /** Syllables an Italian voice would spell out letter by letter, and what to say instead. */
 const UNSPEAKABLE: Record<string, string> = { ng: "eng", z: "ze", s: "se" };
 
-/** One syllable, made pronounceable for an Italian voice. */
+/** One Italian syllable, made pronounceable for an Italian voice. */
 export function speakableSyllable(ita: string): string {
   const syllable = ita.toLowerCase();
   if (UNSPEAKABLE[syllable]) return UNSPEAKABLE[syllable];
@@ -20,25 +26,41 @@ export function speakableLine(line: string): string {
   return line.replace(/[a-zèü]+/gi, speakableSyllable);
 }
 
-/** Prefers an Italian (Italy) voice, then any Italian voice; null if there is none. */
-export function pickItalianVoice<V extends { lang: string; localService?: boolean }>(voices: readonly V[]): V | null {
-  const italian = voices.filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith("it"));
-  const rank = (v: V) => (v.lang.toLowerCase().replace("_", "-") === "it-it" ? 0 : 1) + (v.localService ? 0 : 0.5);
-  return [...italian].sort((a, b) => rank(a) - rank(b))[0] ?? null;
+const normalize = (lang: string) => lang.toLowerCase().replace("_", "-");
+
+/**
+ * Best voice for the language: Italian prefers it-IT; Chinese prefers Mainland
+ * Mandarin (zh-CN), then Taiwan Mandarin, and Cantonese (zh-HK) only as a last
+ * resort. Local voices first. Null if there is none.
+ */
+export function pickVoice<V extends { lang: string; localService?: boolean }>(voices: readonly V[], lang: SpeechLang): V | null {
+  const langRank = (tag: string): number => {
+    if (lang === "it") return tag === "it-it" ? 0 : tag.startsWith("it") ? 1 : Infinity;
+    if (/^(zh-hk|zh-mo|yue)/.test(tag)) return 3; // Cantonese: last resort
+    if (/^(zh-cn|cmn|zh-hans|zh-sg)/.test(tag)) return 0;
+    if (tag.startsWith("zh-tw")) return 1;
+    return tag.startsWith("zh") ? 2 : Infinity;
+  };
+  const rank = (v: V) => langRank(normalize(v.lang)) + (v.localService ? 0 : 0.5);
+  const best = [...voices].sort((a, b) => rank(a) - rank(b))[0];
+  return best && rank(best) !== Infinity ? best : null;
 }
 
 export const isSpeechSupported = () => typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
-/** Speaks the text; resolves when done or cancelled. Stops anything already playing. */
-export function speak(text: string, { rate = 0.9 }: { rate?: number } = {}): Promise<void> {
+/**
+ * Speaks the text; resolves when done or cancelled. Stops anything already playing.
+ * Italian text is made pronounceable first; Chinese text is read as given.
+ */
+export function speak(text: string, { lang = "it", rate = 0.9 }: { lang?: SpeechLang; rate?: number } = {}): Promise<void> {
   return new Promise((resolve) => {
     if (!isSpeechSupported() || !text.trim()) return resolve();
     const synth = window.speechSynthesis;
     synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(speakableLine(text));
-    utterance.lang = "it-IT";
+    const utterance = new SpeechSynthesisUtterance(lang === "it" ? speakableLine(text) : text);
+    utterance.lang = LANG_TAG[lang];
     utterance.rate = rate;
-    const voice = pickItalianVoice(synth.getVoices());
+    const voice = pickVoice(synth.getVoices(), lang);
     if (voice) utterance.voice = voice;
     utterance.onend = () => resolve();
     utterance.onerror = () => resolve();
@@ -50,12 +72,12 @@ export function stopSpeaking() {
   if (isSpeechSupported()) window.speechSynthesis.cancel();
 }
 
-/** For useSyncExternalStore: "unsupported" | "no-italian-voice" | "ready". Voices load asynchronously. */
-export type SpeechStatus = "unsupported" | "no-italian-voice" | "ready";
+/** For useSyncExternalStore. Voices load asynchronously. */
+export type SpeechStatus = "unsupported" | "no-voice" | "ready";
 
-export function getSpeechStatus(): SpeechStatus {
+export function getSpeechStatus(lang: SpeechLang): SpeechStatus {
   if (!isSpeechSupported()) return "unsupported";
-  return pickItalianVoice(window.speechSynthesis.getVoices()) ? "ready" : "no-italian-voice";
+  return pickVoice(window.speechSynthesis.getVoices(), lang) ? "ready" : "no-voice";
 }
 
 export function subscribeVoices(onChange: () => void): () => void {

@@ -66,15 +66,16 @@ function AltPanel({ token, onChoose, onClose }: { token: Token; onChoose: (alt: 
   const snippet = token.ipa ? JSON.stringify({ chars: { [char]: { ipa: token.ipa, note: "" } } }, null, 2) : null;
   return (
     <div className="rounded-xl border border-border bg-surface-2 p-4 text-sm" data-testid="alts">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <Han className="text-2xl">{char}</Han>
           <Chip tone={token.source === "wenzhou" ? "warn" : token.source ? "primary" : "danger"}>
             {token.source ? SOURCE_LABEL[token.source] : "Non presente nelle tabelle"}
           </Chip>
         </div>
         <div className="flex items-center gap-1">
-          <SpeakButton text={token.ita} slow compact label="Ascolta la sillaba" />
+          <SpeakButton text={char} lang="zh" slow variant="compact" tag="中" label="Ascolta il carattere" />
+          <SpeakButton text={token.ita} lang="it" slow variant="compact" tag="IT" label="Ascolta le lettere" />
           <Button variant="ghost" onClick={onClose} aria-label="Chiudi">✕</Button>
         </div>
       </div>
