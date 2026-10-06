@@ -34,6 +34,7 @@ describe("model registry", () => {
     expect(defaultModelFor("anthropic")).toBe("claude-haiku-4-5");
     expect(defaultModelFor("openai")).toBe("gpt-5.4-nano");
     expect(defaultModelFor("xai")).toBe("grok-4.7");
+    expect(defaultModelFor("groq")).toBe("openai/gpt-oss-120b");
   });
 
   it("accepts a custom model ID for a provider", () => {
@@ -45,6 +46,7 @@ describe("model registry", () => {
 describe.each([
   ["openai", "https://api.openai.com/v1/chat/completions", "gpt-5.4-nano"],
   ["xai", "https://api.x.ai/v1/chat/completions", "grok-4.7"],
+  ["groq", "https://api.groq.com/openai/v1/chat/completions", "openai/gpt-oss-120b"],
 ] as const)("%s (fetch stubbed)", (provider, endpoint, model) => {
   afterEach(() => vi.unstubAllGlobals());
 

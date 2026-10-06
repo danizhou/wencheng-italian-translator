@@ -1,6 +1,6 @@
 import { expect, test, type Page, type Request } from "@playwright/test";
 
-const PROVIDERS = /api\.anthropic\.com|api\.openai\.com|api\.x\.ai/;
+const PROVIDERS = /api\.anthropic\.com|api\.openai\.com|api\.x\.ai|api\.groq\.com/;
 
 /** Records every request; the page under test must never send the key to its own origin. */
 function recordRequests(page: Page) {
@@ -182,6 +182,31 @@ test("switches to xAI (Grok), keeps one key per provider, and sends each key onl
   await expect(page.getByPlaceholder("xai-…")).toHaveValue("xai-mine");
   await page.getByLabel("Provider").selectOption("anthropic");
   await expect(page.getByPlaceholder("sk-ant-…")).toHaveValue("sk-ant-mine");
+});
+
+test("translates with Groq, sending the key only to api.groq.com", async ({ page }) => {
+  const requests = recordRequests(page);
+  await page.route("https://api.groq.com/**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        choices: [{ message: { content: JSON.stringify({ zh: "谢谢", words: [], confidence: "alta", note: "" }) }, finish_reason: "stop" }],
+      }),
+    }),
+  );
+
+  await page.goto("./");
+  await page.getByLabel("Provider").selectOption("groq");
+  await expect(page.getByLabel("Modello")).toHaveValue("openai/gpt-oss-120b");
+  await page.getByPlaceholder("gsk_…").fill("gsk_mine");
+  await page.getByPlaceholder("Scrivi una frase in italiano…").fill("Grazie");
+  await page.getByRole("button", { name: "Traduci" }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("zi zi");
+
+  const provider = requests.filter((r) => PROVIDERS.test(r.url()));
+  expect(provider.map((r) => r.url())).toEqual(["https://api.groq.com/openai/v1/chat/completions"]);
+  expect(await provider[0].headerValue("authorization")).toBe("Bearer gsk_mine");
+  expect(JSON.parse(provider[0].postData() ?? "{}")).toMatchObject({ model: "openai/gpt-oss-120b", response_format: { type: "json_schema" } });
 });
 
 test("accepts a custom model ID", async ({ page }) => {

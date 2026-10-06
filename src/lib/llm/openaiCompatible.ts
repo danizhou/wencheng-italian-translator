@@ -6,6 +6,7 @@ import type { CompleteTranslation } from "./anthropic";
 const BASE_URL: Record<Exclude<ProviderId, "anthropic">, string> = {
   openai: `https://${PROVIDERS.openai.host}/v1`,
   xai: `https://${PROVIDERS.xai.host}/v1`,
+  groq: `https://${PROVIDERS.groq.host}/openai/v1`,
 };
 
 /** JSON schema for strict structured outputs; mirrors TranslationSchema (the response is validated with it). */
@@ -41,11 +42,11 @@ interface ChatCompletion {
 }
 
 /**
- * OpenAI and xAI share the Chat Completions API. Plain fetch keeps the browser
+ * OpenAI, xAI and Groq share the Chat Completions API. Plain fetch keeps the browser
  * request minimal (only Authorization and Content-Type), so CORS preflights stay
  * simple. The key goes only to the provider's API host.
  */
-export function createOpenAiCompatibleTranslator(provider: "openai" | "xai", apiKey: string, model: string): CompleteTranslation {
+export function createOpenAiCompatibleTranslator(provider: Exclude<ProviderId, "anthropic">, apiKey: string, model: string): CompleteTranslation {
   if (!apiKey.trim()) throw new LlmError("no_key", "Missing API key");
   const key = apiKey.trim();
 
