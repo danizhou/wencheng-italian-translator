@@ -4,6 +4,7 @@ import type { Token } from "@/lib/segment";
 import type { SourcedReading } from "@/lib/lookup";
 import { ipaToItalian } from "@/lib/ita";
 import { toSimplified } from "@/lib/simplified";
+import { ipaToVietnamese } from "@/lib/vi";
 import { SOURCE_LABEL } from "./labels";
 import { SpeakButton } from "./SpeakButton";
 import { Button, Chip, Han } from "./ui";
@@ -63,6 +64,7 @@ export function SyllableRow({ tokens, selected, onSelect, onChooseAlt }: Props) 
 
 function AltPanel({ token, onChoose, onClose }: { token: Token; onChoose: (alt: SourcedReading) => void; onClose: () => void }) {
   const char = toSimplified(token.text);
+  const vi = token.ipa ? ipaToVietnamese(token.ipa) : "";
   const snippet = token.ipa ? JSON.stringify({ chars: { [char]: { ipa: token.ipa, note: "" } } }, null, 2) : null;
   return (
     <div className="rounded-xl border border-border bg-surface-2 p-4 text-sm" data-testid="alts">
@@ -74,11 +76,16 @@ function AltPanel({ token, onChoose, onClose }: { token: Token; onChoose: (alt: 
           </Chip>
         </div>
         <div className="flex items-center gap-1">
-          <SpeakButton text={char} lang="zh" slow variant="compact" tag="中" label="Ascolta il carattere" />
+          {vi && <SpeakButton text={vi} lang="vi" slow variant="compact" tag="VI" label="Ascolta con la voce vietnamita" />}
           <SpeakButton text={token.ita} lang="it" slow variant="compact" tag="IT" label="Ascolta le lettere" />
           <Button variant="ghost" onClick={onClose} aria-label="Chiudi">✕</Button>
         </div>
       </div>
+      {vi && (
+        <p className="mb-3 text-xs text-muted">
+          Letta dalla voce vietnamita come <span lang="vi" className="font-semibold text-text">{vi}</span>
+        </p>
+      )}
       <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Pronunce alternative</p>
       {token.alts.length === 0 ? (
         <p className="text-muted">Nessuna lettura alternativa.</p>

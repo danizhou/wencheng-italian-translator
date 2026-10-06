@@ -1,14 +1,14 @@
 /**
  * Reads the result aloud with the browser's own speech synthesis (Web Speech
  * API). No network, no key. Two voices:
- * - Chinese: a Mandarin voice reads the characters. Sounds Chinese, but it is
- *   Mandarin, not Wencheng.
- * - Italian: an Italian voice reads the Italian spelling ("gni va ci cu nau").
+ * - Vietnamese: reads the Vietnamese respelling of the IPA (src/lib/vi.ts),
+ *   with tones. The closest available sound to Wencheng; still an approximation.
+ * - Italian: reads the Italian spelling ("gni va ci cu nau").
  */
 
-export type SpeechLang = "zh" | "it";
+export type SpeechLang = "vi" | "it";
 
-const LANG_TAG: Record<SpeechLang, string> = { zh: "zh-CN", it: "it-IT" };
+const LANG_TAG: Record<SpeechLang, string> = { vi: "vi-VN", it: "it-IT" };
 
 /** Syllables an Italian voice would spell out letter by letter, and what to say instead. */
 const UNSPEAKABLE: Record<string, string> = { ng: "eng", z: "ze", s: "se" };
@@ -28,19 +28,9 @@ export function speakableLine(line: string): string {
 
 const normalize = (lang: string) => lang.toLowerCase().replace("_", "-");
 
-/**
- * Best voice for the language: Italian prefers it-IT; Chinese prefers Mainland
- * Mandarin (zh-CN), then Taiwan Mandarin, and Cantonese (zh-HK) only as a last
- * resort. Local voices first. Null if there is none.
- */
+/** Best voice for the language (vi-VN / it-IT first, local voices first); null if there is none. */
 export function pickVoice<V extends { lang: string; localService?: boolean }>(voices: readonly V[], lang: SpeechLang): V | null {
-  const langRank = (tag: string): number => {
-    if (lang === "it") return tag === "it-it" ? 0 : tag.startsWith("it") ? 1 : Infinity;
-    if (/^(zh-hk|zh-mo|yue)/.test(tag)) return 3; // Cantonese: last resort
-    if (/^(zh-cn|cmn|zh-hans|zh-sg)/.test(tag)) return 0;
-    if (tag.startsWith("zh-tw")) return 1;
-    return tag.startsWith("zh") ? 2 : Infinity;
-  };
+  const langRank = (tag: string): number => (tag === LANG_TAG[lang].toLowerCase() ? 0 : tag.startsWith(lang) ? 1 : Infinity);
   const rank = (v: V) => langRank(normalize(v.lang)) + (v.localService ? 0 : 0.5);
   const best = [...voices].sort((a, b) => rank(a) - rank(b))[0];
   return best && rank(best) !== Infinity ? best : null;
@@ -50,7 +40,7 @@ export const isSpeechSupported = () => typeof window !== "undefined" && "speechS
 
 /**
  * Speaks the text; resolves when done or cancelled. Stops anything already playing.
- * Italian text is made pronounceable first; Chinese text is read as given.
+ * Italian text is made pronounceable first; Vietnamese text is read as given.
  */
 export function speak(text: string, { lang = "it", rate = 0.9 }: { lang?: SpeechLang; rate?: number } = {}): Promise<void> {
   return new Promise((resolve) => {
