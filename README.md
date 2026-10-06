@@ -77,11 +77,14 @@ npm run test:e2e   # smoke test Playwright sulla build in out/
 
 ## Pubblicazione su GitHub Pages
 
-Il sito è pubblicato su **https://danizhou.github.io/wencheng-italian-translator/** dal workflow `.github/workflows/pages.yml`, a ogni push su `main` (oppure a mano da Actions → Pages → Run workflow).
+Il sito è pubblicato su **https://wenzhouhua.clicktoconnect.dev/** dal workflow `.github/workflows/pages.yml`, a ogni push su `main` (oppure a mano da Actions → Pages → Run workflow). Il vecchio indirizzo `danizhou.github.io/wencheng-italian-translator` reindirizza qui.
 
-Configurazione una tantum: nel repo vai su **Settings → Pages → Build and deployment → Source** e scegli **GitHub Actions**.
+Configurazione una tantum:
 
-Per provare in locale la build con il prefisso di Pages:
+- nel repo, **Settings → Pages → Build and deployment → Source**: **GitHub Actions**;
+- dominio: su Cloudflare un record **CNAME** `wenzhouhua` → `danizhou.github.io` (DNS only), e in **Settings → Pages → Custom domain** `wenzhouhua.clicktoconnect.dev` con **Enforce HTTPS**. Con il dominio personalizzato il sito sta alla radice: il workflow lo rileva da solo e costruisce senza prefisso.
+
+Senza dominio personalizzato il sito starebbe sotto `/wencheng-italian-translator`; per provare in locale la build con quel prefisso:
 
 ```bash
 PAGES_BASE_PATH=/wencheng-italian-translator npm run build
