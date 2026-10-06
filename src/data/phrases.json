@@ -1,0 +1,185 @@
+{
+  "_doc": "Ready-made phrases for talking with grandparents, shown in the phrase library. zh in traditional characters (shown simplified). 'verified': checked against the plan's reference table; the others were written without a native speaker and are marked 'da verificare' in the UI. 'pick': per-character reading to use instead of the default (must exist in the tables). Every change needs a test in tests/phrases.test.ts.",
+  "categories": [
+    {
+      "id": "saluti",
+      "label": "Saluti"
+    },
+    {
+      "id": "affetto",
+      "label": "Affetto e salute"
+    },
+    {
+      "id": "cibo",
+      "label": "A tavola"
+    },
+    {
+      "id": "casa",
+      "label": "In casa"
+    },
+    {
+      "id": "tempo",
+      "label": "Il tempo"
+    }
+  ],
+  "phrases": [
+    {
+      "id": "nonno",
+      "category": "saluti",
+      "it": "Nonno!",
+      "zh": "爺爺"
+    },
+    {
+      "id": "nonna",
+      "category": "saluti",
+      "it": "Nonna!",
+      "zh": "娘娘"
+    },
+    {
+      "id": "ciao",
+      "category": "saluti",
+      "it": "Ciao",
+      "zh": "你好"
+    },
+    {
+      "id": "come-stai",
+      "category": "saluti",
+      "it": "Come stai di salute?",
+      "zh": "你身體好否"
+    },
+    {
+      "id": "sto-benissimo",
+      "category": "saluti",
+      "it": "Sto benissimo",
+      "zh": "我危險好"
+    },
+    {
+      "id": "grazie",
+      "category": "saluti",
+      "it": "Grazie",
+      "zh": "謝謝",
+      "verified": true
+    },
+    {
+      "id": "a-domani",
+      "category": "saluti",
+      "it": "A domani",
+      "zh": "明朝見"
+    },
+    {
+      "id": "arrivederci",
+      "category": "saluti",
+      "it": "Arrivederci",
+      "zh": "再會",
+      "pick": {
+        "會": "vai6"
+      }
+    },
+    {
+      "id": "ti-voglio-bene",
+      "category": "affetto",
+      "it": "Ti voglio bene",
+      "zh": "我歡喜你"
+    },
+    {
+      "id": "mi-manchi",
+      "category": "affetto",
+      "it": "Mi manchi",
+      "zh": "我想你"
+    },
+    {
+      "id": "riposati",
+      "category": "affetto",
+      "it": "Riposati",
+      "zh": "你歇下"
+    },
+    {
+      "id": "vai-a-dormire-presto",
+      "category": "affetto",
+      "it": "Vai a dormire presto",
+      "zh": "你早點睏"
+    },
+    {
+      "id": "hai-mangiato",
+      "category": "cibo",
+      "it": "Hai mangiato?",
+      "zh": "你飯吃過冇",
+      "verified": true
+    },
+    {
+      "id": "ho-fame",
+      "category": "cibo",
+      "it": "Ho fame",
+      "zh": "我肚飢"
+    },
+    {
+      "id": "buonissimo",
+      "category": "cibo",
+      "it": "È buonissimo",
+      "zh": "危險好吃"
+    },
+    {
+      "id": "vuoi-te",
+      "category": "cibo",
+      "it": "Vuoi del tè?",
+      "zh": "你吃茶否"
+    },
+    {
+      "id": "che-fai",
+      "category": "casa",
+      "it": "Che fai?",
+      "zh": "你做甚物",
+      "verified": true
+    },
+    {
+      "id": "vado-a-casa",
+      "category": "casa",
+      "it": "Vado a casa",
+      "zh": "我轉屋底去"
+    },
+    {
+      "id": "vado-a-dormire",
+      "category": "casa",
+      "it": "Vado a dormire",
+      "zh": "我睏去"
+    },
+    {
+      "id": "non-lo-so",
+      "category": "casa",
+      "it": "Non lo so",
+      "zh": "我否曉得"
+    },
+    {
+      "id": "non-ho-soldi",
+      "category": "casa",
+      "it": "Non ho soldi",
+      "zh": "我冇錢",
+      "verified": true
+    },
+    {
+      "id": "vado-a-milano",
+      "category": "casa",
+      "it": "Vado a Milano",
+      "zh": "我去米蘭",
+      "verified": true
+    },
+    {
+      "id": "fa-freddo",
+      "category": "tempo",
+      "it": "Oggi fa molto freddo",
+      "zh": "今日危險冷",
+      "pick": {
+        "日": "ne8"
+      }
+    },
+    {
+      "id": "fa-caldo",
+      "category": "tempo",
+      "it": "Oggi fa molto caldo",
+      "zh": "今日危險熱",
+      "pick": {
+        "日": "ne8"
+      }
+    }
+  ]
+}

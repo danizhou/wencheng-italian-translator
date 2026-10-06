@@ -176,3 +176,24 @@ test("accepts a custom model ID", async ({ page }) => {
   await page.reload();
   await expect(page.getByLabel(/ID del modello/)).toHaveValue("gpt-5.4");
 });
+
+test("browses the ready-made phrases by category and search", async ({ page }) => {
+  await page.goto("./");
+  const list = page.getByTestId("phrase-list");
+  const total = await list.getByRole("button").count();
+  expect(total).toBeGreaterThanOrEqual(20);
+
+  await page.getByRole("tab", { name: "A tavola" }).click();
+  await expect(list.getByRole("button")).not.toHaveCount(total);
+  await expect(list.getByRole("button", { name: /Hai mangiato\?/ })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Tutte" }).click();
+  await page.getByLabel("Cerca una frase").fill("nonna");
+  await expect(list.getByRole("button")).toHaveCount(1);
+  await list.getByRole("button", { name: /Nonna!/ }).click();
+  await expect(page.getByRole("region", { name: "Risultato" })).toContainText("Da verificare");
+  await expect(page.getByTestId("ita-line")).not.toBeEmpty();
+
+  await page.getByLabel("Cerca una frase").fill("zzzz");
+  await expect(page.getByText("Nessuna frase trovata.")).toBeVisible();
+});

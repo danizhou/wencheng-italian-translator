@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ApiKeyPanel } from "./ApiKeyPanel";
-import { ExampleChips, type Example } from "./ExampleChips";
 import { ShareCard } from "./ShareCard";
+import { PhraseLibrary } from "./PhraseLibrary";
 import { SpeakButton, SpeechNotice } from "./SpeakButton";
 import { SyllableRow } from "./SyllableRow";
 import { CONFIDENCE, ERROR_MESSAGE } from "./labels";
 import { Button, Card, Chip, Han } from "./ui";
 import { keyStore } from "@/lib/keyStore";
-import { ipaToItalian } from "@/lib/ita";
 import {
   createTranslator,
   DEFAULT_MODEL,
@@ -23,7 +22,7 @@ import {
 } from "@/lib/llm";
 import type { Translation } from "@/lib/llm/schema";
 import type { SourcedReading } from "@/lib/lookup";
-import { transcribe } from "@/lib/pipeline";
+import { transcribePhrase, withReading, type Phrase } from "@/lib/phrases";
 import { italianLine, type Token } from "@/lib/segment";
 import { toSimplified } from "@/lib/simplified";
 import { vietnameseLine } from "@/lib/vi";
@@ -35,6 +34,8 @@ interface Result {
   tokens: Token[];
   translation: Translation | null;
   retried: boolean;
+  /** Set when the result is a ready-made phrase */
+  phrase?: Phrase;
 }
 
 export function Translator() {
@@ -92,12 +93,13 @@ export function Translator() {
     if (id.trim()) keyStore.saveModel(provider, id.trim());
   };
 
-  const showExample = async (ex: Example) => {
-    setInput(ex.it);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const showPhrase = (phrase: Phrase) => {
+    setInput(phrase.it);
     setError(null);
     setSelected(null);
-    const t = await transcribe(ex.zh);
-    setResult({ italian: ex.it, zh: t.zh, tokens: t.tokens, translation: null, retried: false });
+    setResult({ italian: phrase.it, zh: phrase.zh, tokens: transcribePhrase(phrase).tokens, translation: null, retried: false, phrase });
+    requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   const translate = async () => {
@@ -126,13 +128,7 @@ export function Translator() {
 
   const chooseAlt = (index: number, alt: SourcedReading) => {
     if (!result) return;
-    const tokens = result.tokens.map((t, i) => {
-      if (i !== index || !t.ipa) return t;
-      const previous: SourcedReading = { ipa: t.ipa, tone: t.tone ?? 0, source: t.source === "phrase" || !t.source ? "override" : t.source };
-      const alts = [previous, ...t.alts.filter((a) => a.ipa !== alt.ipa && a.ipa !== t.ipa)];
-      return { ...t, ipa: alt.ipa, tone: alt.tone, ita: ipaToItalian(alt.ipa), source: alt.source, alts };
-    });
-    setResult({ ...result, tokens });
+    setResult({ ...result, tokens: result.tokens.map((t, i) => (i === index ? withReading(t, alt.ipa) : t)) });
   };
 
   const ita = result ? italianLine(result.tokens) : "";
@@ -194,10 +190,6 @@ export function Translator() {
               {loading ? "Traduco…" : "Traduci"}
             </Button>
           </div>
-          <div className="flex flex-col gap-2 border-t border-border pt-4">
-            <span className="text-xs font-medium uppercase tracking-wide text-muted">Esempi · funzionano senza chiave</span>
-            <ExampleChips onPick={(ex) => void showExample(ex)} disabled={loading} />
-          </div>
         </form>
       </Card>
 
@@ -207,12 +199,21 @@ export function Translator() {
         </p>
       )}
 
+      <div ref={resultRef} className="scroll-mt-4" />
       {result && (
         <Card
           aria-label="Risultato"
           title={result.italian}
           subtitle={<Han className="text-base">{zhShown}</Han>}
-          actions={result.translation ? <Chip tone={CONFIDENCE[result.translation.confidence].tone}>{CONFIDENCE[result.translation.confidence].label}</Chip> : <Chip tone="primary">Esempio</Chip>}
+          actions={
+            result.translation ? (
+              <Chip tone={CONFIDENCE[result.translation.confidence].tone}>{CONFIDENCE[result.translation.confidence].label}</Chip>
+            ) : result.phrase?.verified ? (
+              <Chip tone="primary">Frase pronta</Chip>
+            ) : (
+              <Chip tone="warn">Da verificare</Chip>
+            )
+          }
         >
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-end justify-between gap-3 rounded-xl bg-accent-soft px-4 py-3">
@@ -265,6 +266,8 @@ export function Translator() {
           </div>
         </Card>
       )}
+
+      <PhraseLibrary onPick={showPhrase} selectedId={result?.phrase?.id} />
 
       <ApiKeyPanel
         provider={provider}
