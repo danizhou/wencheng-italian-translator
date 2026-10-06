@@ -1,12 +1,12 @@
-# Traduttore Wencheng
+# Traduttore Wenzhouhua · 温州话
 
-Italiano → dialetto di Wencheng (Daxue) o di Qingtian, con la pronuncia scritta "all'italiana". Web app statica (Next.js export) con BYOK: la chiave LLM dell'utente va direttamente dal browser al provider.
+Italiano → dialetti dell'area di Wenzhou (温州话): Wencheng (Daxue) e Qingtian, con la pronuncia scritta "all'italiana". Web app statica (Next.js export) con BYOK: la chiave LLM dell'utente va direttamente dal browser al provider.
 
 Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 
 ## Come si usa
 
-1. Apri il sito, scegli il dialetto (Wencheng o Qingtian) e una delle **frasi pronte**: una ventina di frasi di tutti i giorni in casa (a tavola, in casa, uscire e rientrare, il tempo, soldi e spesa, risposte veloci). Puoi cercarle o filtrarle per categoria e funzionano anche senza chiave. Le frasi segnate "da verificare" sono state scritte senza un parlante di Wencheng: correggile in `src/data/phrases.json` quando le senti dire da qualcuno. Le frasi sono scritte per Wencheng: in Qingtian vengono lette con la pronuncia di Qingtian e sono tutte da verificare. Cambiando dialetto, la frase già mostrata viene riletta con la pronuncia dell'altro, senza una nuova traduzione.
+1. Apri il sito, scegli il dialetto (Wencheng o Qingtian) e una delle **frasi pronte**: una ventina di frasi di tutti i giorni in casa (a tavola, in casa, uscire e rientrare, il tempo, soldi e spesa, risposte veloci). Puoi cercarle o filtrarle per categoria e funzionano anche senza chiave. Le frasi segnate "da verificare" sono state scritte senza un parlante del dialetto: correggile in `src/data/phrases.json` quando le senti dire da qualcuno. Le frasi sono scritte per Wencheng: in Qingtian vengono lette con la pronuncia di Qingtian e sono tutte da verificare. Cambiando dialetto, la frase già mostrata viene riletta con la pronuncia dell'altro, senza una nuova traduzione.
 2. Per tradurre frasi nuove scegli un provider nel riquadro "Chiave API" e inserisci la tua API key:
    - **Anthropic (Claude)**: [console.anthropic.com](https://console.anthropic.com/settings/keys), modello predefinito Claude Haiku 4.5;
    - **OpenAI (GPT)**: [platform.openai.com](https://platform.openai.com/api-keys), modello predefinito GPT-5.4 nano;

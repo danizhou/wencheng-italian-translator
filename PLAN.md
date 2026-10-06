@@ -1,4 +1,6 @@
-# Build plan — Italian → Wenchenghua translator ("Italian-style" pronunciation)
+# Build plan — Italian → Wenzhouhua translator ("Italian-style" pronunciation)
+
+> **Name:** the app is "Traduttore Wenzhouhua · 温州话": it covers the Wenzhou-area dialects people in the Italian community speak, Wencheng (Daxue) and Qingtian (§13), not only Wencheng. Strictly, Qingtian county town speaks Lishui (Chuzhou) Wu, while Wenxi speaks Oujiang Wu like Wencheng; "Wenzhouhua" is the everyday umbrella name, and the dialect picker names the exact variety. The repository keeps its name so the site URL does not change.
 
 > Initial brief for Claude Code: "Read PLAN.md and implement it phase by phase. Stop at the end of each phase and show me the tests."
 

@@ -20,8 +20,8 @@ export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard({ 
   return (
     <div ref={ref} className="w-[560px] overflow-hidden rounded-3xl bg-[#13308f] text-white" style={{ fontFamily: "var(--font-google-sans), sans-serif" }}>
       <div className="flex items-center gap-3 bg-[#0d1a3d] px-8 py-4">
-        <span lang="zh-Hans" className="flex size-9 items-center justify-center rounded-lg bg-[#ffc72c] text-xl font-bold text-[#13308f]" style={{ fontFamily: HAN_FONT }}>文</span>
-        <span className="text-sm font-medium tracking-wide text-[#c9d6ff]">Traduttore Wencheng · Italiano → <span lang="zh-Hans" style={{ fontFamily: HAN_FONT }}>{toSimplified(dialect.han)}</span></span>
+        <span lang="zh-Hans" className="flex size-9 items-center justify-center rounded-lg bg-[#ffc72c] text-xl font-bold text-[#13308f]" style={{ fontFamily: HAN_FONT }}>温</span>
+        <span className="text-sm font-medium tracking-wide text-[#c9d6ff]">Traduttore Wenzhouhua · Italiano → <span lang="zh-Hans" style={{ fontFamily: HAN_FONT }}>{toSimplified(dialect.han)}</span></span>
       </div>
       <div className="px-8 py-7">
         <p className="text-2xl font-semibold">{italian}</p>

@@ -6,8 +6,8 @@ const googleSans = Google_Sans({ subsets: ["latin", "latin-ext"], variable: "--f
 const googleSansCode = Google_Sans_Code({ subsets: ["latin", "latin-ext"], variable: "--font-google-sans-code", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Traduttore Wencheng · 文成话",
-  description: "Italiano → Wenchenghua (Daxue), con la pronuncia scritta all'italiana",
+  title: "Traduttore Wenzhouhua · 温州话",
+  description: "Italiano → dialetti dell'area di Wenzhou (Wencheng, Qingtian), con la pronuncia scritta all'italiana",
 };
 
 export const viewport: Viewport = {

@@ -11,7 +11,8 @@ function recordRequests(page: Page) {
 
 test("loads with title and API key box", async ({ page }) => {
   await page.goto("./");
-  await expect(page.getByRole("heading", { name: /Traduttore Wencheng/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Traduttore Wenzhouhua/ })).toBeVisible();
+  await expect(page).toHaveTitle("Traduttore Wenzhouhua · 温州话");
   await expect(page.getByText("Chiave API")).toBeVisible();
 });
 
