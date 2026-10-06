@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   output: "export",
   basePath,
   images: { unoptimized: true },
+  turbopack: {
+    // Piper TTS (Emscripten) mentions fs/path on its Node.js-only branch
+    resolveAlias: {
+      fs: { browser: "./src/lib/empty-module.ts" },
+      path: { browser: "./src/lib/empty-module.ts" },
+    },
+  },
 };
 
 export default nextConfig;
