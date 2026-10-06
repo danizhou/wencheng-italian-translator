@@ -65,6 +65,14 @@ npm run check:data   # controlla che i file siano validi
 
 Il sito carica la tabella di un dialetto solo quando viene usato.
 
+## Logo e anteprima dei link
+
+Il logo (fumetto giallo con il carattere 温) sta in `src/data/logo.json`: il carattere è un tracciato preso da Noto Sans SC (licenza OFL), quindi appare uguale su ogni dispositivo. Favicon, icona per iPhone e immagine di anteprima per WhatsApp, Telegram e social si rigenerano con:
+
+```bash
+npm run build:icons   # scrive icon.svg, favicon.ico, apple-icon.png, opengraph-image.png in src/app
+```
+
 ## Sviluppo
 
 ```bash

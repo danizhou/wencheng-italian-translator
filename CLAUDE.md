@@ -13,5 +13,6 @@
 - Traditional characters internally; convert LLM output with opencc s2t.
 - Everything shown to the user is simplified Chinese: pass it through toSimplified (src/lib/simplified.ts) and mark it lang="zh-Hans". simplified.json is generated (npm run build:simplified).
 - UI uses the design tokens in src/app/globals.css (blue + yellow, Google Sans) and the primitives in src/components/ui.tsx.
+- The logo lives in src/data/logo.json (rendered by src/components/Logo.tsx). Icons and the link preview image in src/app are generated (npm run build:icons): do not edit them by hand.
 
 Full plan and phases: PLAN.md.
