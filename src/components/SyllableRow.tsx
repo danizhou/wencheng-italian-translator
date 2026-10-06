@@ -5,6 +5,7 @@ import type { SourcedReading } from "@/lib/lookup";
 import { ipaToItalian } from "@/lib/ita";
 import { toSimplified } from "@/lib/simplified";
 import { SOURCE_LABEL } from "./labels";
+import { SpeakButton } from "./SpeakButton";
 import { Button, Chip, Han } from "./ui";
 
 interface Props {
@@ -72,7 +73,10 @@ function AltPanel({ token, onChoose, onClose }: { token: Token; onChoose: (alt: 
             {token.source ? SOURCE_LABEL[token.source] : "Non presente nelle tabelle"}
           </Chip>
         </div>
-        <Button variant="ghost" onClick={onClose} aria-label="Chiudi">✕</Button>
+        <div className="flex items-center gap-1">
+          <SpeakButton text={token.ita} slow compact label="Ascolta la sillaba" />
+          <Button variant="ghost" onClick={onClose} aria-label="Chiudi">✕</Button>
+        </div>
       </div>
       <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Pronunce alternative</p>
       {token.alts.length === 0 ? (

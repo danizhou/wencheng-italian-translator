@@ -9,6 +9,9 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 1. Apri il sito e prova un esempio: funziona anche senza chiave.
 2. Per tradurre frasi nuove inserisci la tua API key Anthropic nel riquadro "Chiave API" (la crei su [console.anthropic.com](https://console.anthropic.com/settings/keys)).
 3. Tocca una sillaba per vedere le pronunce alternative e la fonte (Daxue, Wencheng o Wenzhou).
+4. Premi **Ascolta** per sentire la pronuncia (spunta "Lento" per rallentarla), oppure l'altoparlante nel riquadro di una sillaba.
+
+L'audio usa la voce italiana del tuo browser (Web Speech API): funziona senza chiave e senza connessione, ma è una voce italiana che legge le lettere, non un parlante di Wencheng. Se il dispositivo non ha una voce italiana viene usata quella predefinita. Le registrazioni di un parlante sono il passo successivo (vedi `PLAN.md`, §12).
 
 La chiave è salvata solo in locale, nel `localStorage` del tuo browser, e va solo ad `api.anthropic.com` quando traduci: il sito è statico, non ha un server e non la vede mai. Togliendo la spunta "Salva la chiave su questo dispositivo" resta solo in memoria; "Cancella chiave" la elimina.
 

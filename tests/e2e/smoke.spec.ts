@@ -84,3 +84,47 @@ test("translates with a key (provider mocked) and never sends the key to our ori
     expect(headers + (r.postData() ?? "")).not.toMatch(/sk-/);
   }
 });
+
+test("reads the Italian spelling aloud with an Italian voice", async ({ page }) => {
+  // Stub speechSynthesis: headless browsers have no voices
+  await page.addInitScript(() => {
+    const spoken: { text: string; lang: string; rate: number; voice: string | null }[] = [];
+    (window as unknown as { __spoken: typeof spoken }).__spoken = spoken;
+    const voices = [{ lang: "it-IT", name: "Italiano", localService: true }];
+    class Utterance {
+      lang = "";
+      rate = 1;
+      voice: { name: string } | null = null;
+      onend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      constructor(public text: string) {}
+    }
+    Object.defineProperty(window, "SpeechSynthesisUtterance", { value: Utterance });
+    Object.defineProperty(window, "speechSynthesis", {
+      value: {
+        getVoices: () => voices,
+        cancel: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        speak: (u: Utterance) => {
+          spoken.push({ text: u.text, lang: u.lang, rate: u.rate, voice: u.voice?.name ?? null });
+          setTimeout(() => u.onend?.(), 10);
+        },
+      },
+    });
+  });
+
+  await page.goto("./");
+  await page.getByRole("button", { name: "Vado a Milano" }).click();
+  await expect(page.getByTestId("ita-line")).toHaveText("ng ciü meng la");
+  await page.getByRole("button", { name: "Ascolta", exact: true }).click();
+
+  await page.getByTestId("syllables").getByRole("button").nth(1).click();
+  await page.getByRole("button", { name: "Ascolta la sillaba: ciü" }).click();
+
+  const spoken = await page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken);
+  expect(spoken).toEqual([
+    { text: "eng ciu meng la", lang: "it-IT", rate: 0.9, voice: "Italiano" },
+    { text: "ciu", lang: "it-IT", rate: 0.6, voice: "Italiano" },
+  ]);
+});
