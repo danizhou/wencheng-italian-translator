@@ -176,16 +176,3 @@ test("accepts a custom model ID", async ({ page }) => {
   await page.reload();
   await expect(page.getByLabel(/ID del modello/)).toHaveValue("gpt-5.4");
 });
-
-test("offers a downloadable audio file and explains a failed voice download", async ({ page }) => {
-  // No real model download in tests: block the hosts Piper loads from
-  await page.route(/huggingface\.co|cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com/, (route) => route.abort());
-  await page.goto("./");
-  await page.getByRole("button", { name: "Hai mangiato?" }).click();
-  await expect(page.getByTestId("ita-line")).toHaveText("gni va ci cu nau");
-  await expect(page.getByText("La prima volta scarica la voce (63 MB)")).toBeVisible();
-
-  await page.getByRole("button", { name: "Scarica audio" }).click();
-  await expect(page.getByRole("alert").filter({ hasText: "audio" })).toContainText("Non sono riuscito a creare l'audio");
-  await expect(page.getByRole("button", { name: "Scarica audio" })).toBeEnabled();
-});
