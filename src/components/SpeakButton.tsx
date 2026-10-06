@@ -4,9 +4,9 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { getSpeechStatus, speak, stopSpeaking, subscribeVoices, type SpeechLang, type SpeechStatus } from "@/lib/speech";
 
 const HINT: Record<SpeechLang, Record<Exclude<SpeechStatus, "ready">, string>> = {
-  zh: {
+  vi: {
     unsupported: "Il tuo browser non supporta la lettura ad alta voce.",
-    "no-voice": "Nessuna voce cinese installata: aggiungila nelle impostazioni di sintesi vocale del dispositivo.",
+    "no-voice": "Nessuna voce vietnamita installata: aggiungila nelle impostazioni di sintesi vocale del dispositivo.",
   },
   it: {
     unsupported: "Il tuo browser non supporta la lettura ad alta voce.",
@@ -29,12 +29,12 @@ function SpeakerIcon() {
 
 interface Props {
   text: string;
-  /** "zh": a Mandarin voice reads the characters; "it": an Italian voice reads the spelling */
+  /** "vi": a Vietnamese voice reads the Vietnamese respelling, with tones; "it": an Italian voice reads the Italian spelling */
   lang: SpeechLang;
   slow?: boolean;
   label: string;
   variant?: "primary" | "secondary" | "compact";
-  /** Short tag shown on compact buttons, e.g. "中" or "IT" */
+  /** Short tag shown on compact buttons, e.g. "VI" or "IT" */
   tag?: string;
 }
 
@@ -80,12 +80,12 @@ export function SpeakButton({ text, lang, slow = false, label, variant = "primar
 
 /** Explains a missing voice, as list items under the result. */
 export function SpeechNotice() {
-  const zh = useSpeechStatus("zh");
+  const vi = useSpeechStatus("vi");
   const it = useSpeechStatus("it");
   return (
     <>
-      {zh !== "ready" && <li>{HINT.zh[zh]}</li>}
-      {it !== "ready" && it !== zh && <li>{HINT.it[it]}</li>}
+      {vi !== "ready" && <li>{HINT.vi[vi]}</li>}
+      {it !== "ready" && it !== vi && <li>{HINT.it[it]}</li>}
     </>
   );
 }

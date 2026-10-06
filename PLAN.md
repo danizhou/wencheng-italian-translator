@@ -404,8 +404,10 @@ Runs against `BASE_URL`, with no API key.
 
 Two different sounds: the **meme sound** (an Italian voice reading "gni va ci cu nau") and the **real sound** (a Wencheng speaker, with tones). No TTS model speaks Wenchenghua, so the real sound needs recordings. Size: 1,040 Wencheng syllables with tone (385 toneless); the 5 examples use 14.
 
-1. **Browser speech — done (phase 7).** Two voices: "Ascolta" reads the characters with a Mandarin voice (zh-CN preferred, then zh-TW, Cantonese last); "Lettere" reads the Italian spelling with an Italian voice. Both sound non-Wencheng: Mandarin is the wrong dialect, Italian rounds every sound. Rejected for now: an IPA-driven synthesizer (needs Daxue tone contours, which MCPDict does not have) and Wu TTS models (Shanghai Wu, not Oujiang Wu).
-   Italian voice details: `src/lib/speech.ts`: Web Speech API, it-IT voice, no key, no network. Vowel-less syllables are made pronounceable for speech only (ng → eng, z → ze, s → se; ü → iu); the on-screen spelling does not change. "Lettere" on the line, "Lento" toggle, 中 / IT per-syllable play in the alternatives panel. The UI states neither voice is a Wencheng speaker.
+1. **Browser speech — done (phase 7).** No TTS speaks Wenchenghua (Wu models cover Shanghai Wu, not Oujiang Wu), and a Mandarin voice reading the characters sounded wrong, so it was removed.
+   - **"Ascolta": Vietnamese voice.** `src/lib/vi.ts` respells the IPA in Vietnamese orthography with the rules in `src/data/vi-rules.json` (initials, the 46 finals in the data matched to the closest valid Vietnamese rhyme, c/k/qu, g/gh, ng/ngh, gi+i spelling, tone-mark placement). Wenzhou tone contours (33, 31, 45ʔ, 34ʔ, 42, 11, 313, 213 — zh.wikipedia 温州话) map to ngang, huyền, sắc, ngã, nặng, huyền, hỏi, hỏi. Daxue's own contours are not in the data; these are an approximation.
+   - **"Lettere": Italian voice** reading the Italian spelling; vowel-less syllables are made pronounceable for speech only (ng → eng, z → ze, s → se; ü → iu).
+   - Both via the Web Speech API: no key, no network. "Lento" toggle; VI / IT per-syllable buttons in the alternatives panel, which also shows the Vietnamese respelling. The UI states neither is a Wencheng speaker.
 2. **Recordings by a Yuhu speaker (next, needs a speaker).**
    - In-app "Registra" mode: shows the next syllable (character, IPA, Italian letters), records with MediaRecorder, playback and retake, downloads a zip. Nothing leaves the speaker's device.
    - Order: the 14 example syllables, then verified phrases, then the ~300 most frequent syllables.

@@ -85,14 +85,14 @@ test("translates with a key (provider mocked) and never sends the key to our ori
   }
 });
 
-test("reads the characters with a Chinese voice and the spelling with an Italian voice", async ({ page }) => {
+test("reads the pronunciation with a Vietnamese voice and the spelling with an Italian voice", async ({ page }) => {
   // Stub speechSynthesis: headless browsers have no voices
   await page.addInitScript(() => {
     const spoken: { text: string; lang: string; rate: number; voice: string | null }[] = [];
     (window as unknown as { __spoken: typeof spoken }).__spoken = spoken;
     const voices = [
       { lang: "it-IT", name: "Italiano", localService: true },
-      { lang: "zh-CN", name: "Mandarino", localService: true },
+      { lang: "vi-VN", name: "Vietnamita", localService: true },
     ];
     class Utterance {
       lang = "";
@@ -125,15 +125,16 @@ test("reads the characters with a Chinese voice and the spelling with an Italian
   await page.getByRole("button", { name: "Lettere", exact: true }).click();
 
   await page.getByTestId("syllables").getByRole("button").nth(1).click();
-  await page.getByRole("button", { name: "Ascolta il carattere: 去" }).click();
+  await expect(page.getByTestId("alts")).toContainText("Letta dalla voce vietnamita come chuỵ");
+  await page.getByRole("button", { name: "Ascolta con la voce vietnamita: chuỵ" }).click();
   await page.getByRole("button", { name: "Ascolta le lettere: ciü" }).click();
 
   await expect.poll(() => page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken.length)).toBe(4);
   const spoken = await page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken);
   expect(spoken).toEqual([
-    { text: "我去米兰", lang: "zh-CN", rate: 0.9, voice: "Mandarino" },
+    { text: "ững chuỵ mễnh là", lang: "vi-VN", rate: 0.9, voice: "Vietnamita" },
     { text: "eng ciu meng la", lang: "it-IT", rate: 0.9, voice: "Italiano" },
-    { text: "去", lang: "zh-CN", rate: 0.6, voice: "Mandarino" },
+    { text: "chuỵ", lang: "vi-VN", rate: 0.6, voice: "Vietnamita" },
     { text: "ciu", lang: "it-IT", rate: 0.6, voice: "Italiano" },
   ]);
 });

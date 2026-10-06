@@ -1,0 +1,30 @@
+{
+  "_doc": "IPA → Vietnamese spelling rules, used by src/lib/vi.ts to read the pronunciation aloud with a Vietnamese voice. Vietnamese has tones and many Wu sounds (ng-, nh, ư, ơ, đ, gi). Every change needs a test in tests/vi.test.ts. Initials are matched longest first; finals (rhymes) are matched whole.",
+  "ignoredPrefixes": ["ʔ"],
+  "syllabicNasals": ["ɦŋ̍", "ʔŋ̍", "ŋ̍"],
+  "syllabicNasal": "ưng",
+  "initials": {
+    "tɕʰ": "ch", "tɕ": "ch", "dʑ": "gi", "ʑ": "gi", "ɕ": "x",
+    "tsʰ": "ch", "ts": "ch", "dz": "d",
+    "pʰ": "p", "p": "p", "b": "b", "m": "m", "f": "ph", "v": "v",
+    "tʰ": "th", "t": "t", "d": "đ", "n": "n", "l": "l",
+    "s": "x", "z": "d",
+    "kʰ": "kh", "k": "c", "ɡ": "g", "ŋ": "ng", "ȵ": "nh",
+    "h": "h", "ɦ": "", "j": ""
+  },
+  "finals": {
+    "i": "i", "u": "u", "y": "uy", "ɿ": "ư",
+    "a": "a", "ɑ": "a", "e": "ê", "ɛ": "e", "o": "ô", "ɔ": "o",
+    "ø": "ơ", "ɜ": "ơ", "ə": "ơ",
+    "ai": "ai", "au": "ao", "ei": "ây", "ɤu": "âu", "øy": "ơi",
+    "ia": "ia", "ie": "iê", "iɛ": "iê", "iu": "iu", "io": "iô",
+    "iau": "iêu", "ieu": "iêu", "iɤu": "iêu", "iai": "ai",
+    "ua": "oa", "uɑ": "oa", "uai": "oai", "uo": "uô", "uɔ": "uô",
+    "yu": "iu", "yø": "uyê", "yo": "uô", "yɔ": "uô",
+    "aŋ": "ang", "eŋ": "ênh", "oŋ": "ông", "əŋ": "âng", "øŋ": "âng",
+    "iaŋ": "iêng", "ioŋ": "iông", "uaŋ": "oang",
+    "yøŋ": "ương", "yəŋ": "uâng"
+  },
+  "_tones": "Wenzhou contours (zh.wikipedia 温州话): 1=33 2=31 3=45ʔ 4=34ʔ 5=42 6=11 7=313 8=213, 0=neutral. Vietnamese: ngang (none), huyền (grave), sắc (acute), ngã (tilde), nặng (dot below), hỏi (hook).",
+  "tones": { "0": "", "1": "", "2": "huyen", "3": "sac", "4": "nga", "5": "nang", "6": "huyen", "7": "hoi", "8": "hoi" }
+}

@@ -26,6 +26,7 @@ import type { SourcedReading } from "@/lib/lookup";
 import { transcribe } from "@/lib/pipeline";
 import { italianLine, type Token } from "@/lib/segment";
 import { toSimplified } from "@/lib/simplified";
+import { vietnameseLine } from "@/lib/vi";
 
 interface Result {
   italian: string;
@@ -136,6 +137,7 @@ export function Translator() {
 
   const ita = result ? italianLine(result.tokens) : "";
   const zhShown = result ? toSimplified(result.zh) : "";
+  const viLine = result ? vietnameseLine(result.tokens) : "";
 
   const copy = async (what: "ita" | "all") => {
     if (!result) return;
@@ -223,7 +225,7 @@ export function Translator() {
                   <input type="checkbox" className="size-3.5 accent-[var(--primary)]" checked={slow} onChange={(e) => setSlow(e.target.checked)} />
                   Lento
                 </label>
-                <SpeakButton text={zhShown} lang="zh" slow={slow} label="Ascolta" />
+                <SpeakButton text={viLine} lang="vi" slow={slow} label="Ascolta" />
                 <SpeakButton text={ita} lang="it" slow={slow} label="Lettere" variant="secondary" />
               </div>
             </div>
@@ -247,7 +249,7 @@ export function Translator() {
               {wenzhouCount > 0 && <li className="text-warn">Le sillabe evidenziate vengono dal dialetto di Wenzhou città, non di Wencheng.</li>}
               {missingCount > 0 && <li className="text-danger">I caratteri in rosso non sono in nessuna tabella.</li>}
               <li>Tocca una sillaba per vedere le pronunce alternative.</li>
-              <li>“Ascolta” usa una voce cinese in mandarino che legge i caratteri; “Lettere” una voce italiana che legge la trascrizione. Nessuna delle due è il dialetto di Wencheng.</li>
+              <li>“Ascolta” usa una voce vietnamita che legge la pronuncia con i toni (il vietnamita ha molti suoni e toni simili al dialetto); “Lettere” una voce italiana che legge la trascrizione. Sono approssimazioni: nessuna delle due è un parlante di Wencheng.</li>
               <SpeechNotice />
             </ul>
 

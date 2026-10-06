@@ -5,6 +5,7 @@
 - Deterministic pipeline: the only LLM call lives in src/lib/llm. No agent framework.
 - The user's API key must NEVER be sent to our server or logged. It is saved only locally (localStorage), by default, with a visible notice and an opt-out.
 - The IPA → Italian rules live in src/data/ita-rules.json; every change needs a test in tests/ita.test.ts.
+- The IPA → Vietnamese respelling (read aloud by a Vietnamese voice) lives in src/data/vi-rules.json; every change needs a test in tests/vi.test.ts.
 - wencheng.json is generated: do not edit it by hand, use overrides.json.
 - Source priority: overrides > Daxue (文成大嶨) > Wencheng (文成) > Wenzhou (溫州).
 - Traditional characters internally; convert LLM output with opencc s2t.
