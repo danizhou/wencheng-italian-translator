@@ -1,6 +1,5 @@
 import { LlmError } from "./errors";
 import { PROVIDERS, type ProviderId } from "./models";
-import { SYSTEM_PROMPT } from "./prompt";
 import { TranslationSchema } from "./schema";
 import type { CompleteTranslation } from "./anthropic";
 
@@ -50,7 +49,7 @@ export function createOpenAiCompatibleTranslator(provider: "openai" | "xai", api
   if (!apiKey.trim()) throw new LlmError("no_key", "Missing API key");
   const key = apiKey.trim();
 
-  return async (userMessage) => {
+  return async (system, userMessage) => {
     let response: Response;
     try {
       response = await fetch(`${BASE_URL[provider]}/chat/completions`, {
@@ -59,7 +58,7 @@ export function createOpenAiCompatibleTranslator(provider: "openai" | "xai", api
         body: JSON.stringify({
           model,
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: system },
             { role: "user", content: userMessage },
           ],
           response_format: RESPONSE_FORMAT,

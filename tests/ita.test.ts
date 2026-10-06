@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createIpaToItalian, ipaToItalian, itaRules, splitTone } from "@/lib/ita";
 import wencheng from "@/data/wencheng.json";
-import type { WenchengData } from "@/lib/data-types";
+import qingtian from "@/data/qingtian.json";
+import type { DialectData } from "@/lib/data-types";
 
 describe("ipaToItalian — cases from plan §4.2", () => {
   it.each([
@@ -73,6 +74,32 @@ describe("ipaToItalian — spelling", () => {
   });
 });
 
+describe("ipaToItalian — Qingtian sounds", () => {
+  it.each([
+    ["ɓeŋ3", "beng", "implosive ɓ → b"],
+    ["ɗoŋ1", "dong", "implosive ɗ → d"],
+    ["ɗɪŋ1", "ding", "ɪ → i"],
+    ["iæʔ7", "iè", "æ → è, final ʔ not written"],
+    ["ɓaʔ7", "ba", "final ʔ after a vowel"],
+    ["tsʰɿʔ7", "z", "ɿ and ʔ both silent"],
+    ["dʑyɐ2", "giüa", "ɐ → a"],
+    ["xœ1", "heu", "x → h, œ → eu"],
+    ["tsʮ3", "zu", "ʮ → u"],
+    ["zʮ6", "zu", "ʮ after z"],
+    ["ʉ1", "ü", "ʉ → ü"],
+    ["tɕʰiʉ3", "ciü", "soft c before i: no extra i"],
+    ["tʰʌʉ3", "teu", "ʌʉ → eu"],
+    ["lɤʉʔ8", "leu", "ɤʉ → eu"],
+    ["ŋɤu4", "ngeu", "ɤu → eu"],
+    ["n̩6", "n", "syllabic n"],
+    ["m̩4", "m", "syllabic m"],
+    ["ʔiai7", "iai", "leading ʔ dropped"],
+    ["ʔɿ1", "i", "ɿ alone is written i"],
+  ])("%s → %s (%s)", (ipa, ita) => {
+    expect(ipaToItalian(ipa)).toBe(ita);
+  });
+});
+
 describe("splitTone", () => {
   it("splits syllable and tone", () => {
     expect(splitTone("tɕʰi7")).toEqual({ syllable: "tɕʰi", tone: 7 });
@@ -81,9 +108,12 @@ describe("splitTone", () => {
 });
 
 describe("data coverage", () => {
-  it("every reading in wencheng.json becomes Italian letters only", () => {
+  it.each([
+    ["wencheng.json", wencheng],
+    ["qingtian.json", qingtian],
+  ])("every reading in %s becomes Italian letters only", (_, data) => {
     const bad: string[] = [];
-    for (const entry of Object.values((wencheng as WenchengData).chars)) {
+    for (const entry of Object.values((data as DialectData).chars)) {
       for (const group of [entry, ...(entry.alt ?? [])]) {
         for (const { ipa } of group.readings) {
           const ita = ipaToItalian(ipa);

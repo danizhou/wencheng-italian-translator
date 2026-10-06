@@ -2,10 +2,10 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { LlmError } from "./errors";
 import { findModel } from "./models";
-import { SYSTEM_PROMPT } from "./prompt";
 import { TranslationSchema, type Translation } from "./schema";
 
-export type CompleteTranslation = (userMessage: string) => Promise<Translation>;
+/** One structured-output call: system prompt + user message → translation */
+export type CompleteTranslation = (system: string, userMessage: string) => Promise<Translation>;
 
 /**
  * Calls Anthropic straight from the browser with the user's own key.
@@ -16,12 +16,12 @@ export function createAnthropicTranslator(apiKey: string, modelId: string): Comp
   const client = new Anthropic({ apiKey: apiKey.trim(), dangerouslyAllowBrowser: true, maxRetries: 1 });
   const model = findModel(modelId, "anthropic");
 
-  return async (userMessage) => {
+  return async (system, userMessage) => {
     try {
       const response = await client.beta.messages.parse({
         model: model.id,
         max_tokens: 4000,
-        system: SYSTEM_PROMPT,
+        system,
         messages: [{ role: "user", content: userMessage }],
         output_config: {
           format: betaZodOutputFormat(TranslationSchema),

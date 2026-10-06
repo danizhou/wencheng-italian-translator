@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { ipaToVietnamese, placeTone, vietnameseLine } from "@/lib/vi";
 import { transcribe } from "@/lib/pipeline";
 import wencheng from "@/data/wencheng.json";
-import type { WenchengData } from "@/lib/data-types";
+import qingtian from "@/data/qingtian.json";
+import type { DialectData } from "@/lib/data-types";
 
 describe("ipaToVietnamese — the §1 syllables", () => {
   it.each([
@@ -22,7 +23,7 @@ describe("ipaToVietnamese — the §1 syllables", () => {
     ["dʑie2", "giề"],
     ["foŋ1", "phông"],
   ])("%s → %s", (ipa, vi) => {
-    expect(ipaToVietnamese(ipa)).toBe(vi);
+    expect(ipaToVietnamese(ipa, "wencheng")).toBe(vi);
   });
 });
 
@@ -41,11 +42,37 @@ describe("ipaToVietnamese — Vietnamese spelling", () => {
     ["ʔȵi1", "nhi", "glottal stop dropped, tone 1 unmarked"],
     ["ta0", "ta", "neutral tone unmarked"],
   ])("%s → %s (%s)", (ipa, vi) => {
-    expect(ipaToVietnamese(ipa)).toBe(vi);
+    expect(ipaToVietnamese(ipa, "wencheng")).toBe(vi);
   });
 
   it("maps the eight Wenzhou tones onto Vietnamese tones", () => {
-    expect([1, 2, 3, 4, 5, 6, 7, 8].map((t) => ipaToVietnamese(`ma${t}`))).toEqual(["ma", "mà", "má", "mã", "mạ", "mà", "mả", "mả"]);
+    expect([1, 2, 3, 4, 5, 6, 7, 8].map((t) => ipaToVietnamese(`ma${t}`, "wencheng"))).toEqual(["ma", "mà", "má", "mã", "mạ", "mà", "mả", "mả"]);
+  });
+});
+
+describe("ipaToVietnamese — Qingtian", () => {
+  it.each([
+    ["ɓeŋ3", "bếnh", "implosive ɓ → b (Vietnamese b is implosive too)"],
+    ["ɗoŋ1", "đông", "implosive ɗ → đ"],
+    ["xœ1", "khơ", "x → kh, œ → ơ"],
+    ["iæʔ7", "yệ", "final ʔ dropped, tone 7 → nặng, lone iê → yê"],
+    ["tsʰɿʔ7", "chự", "ɿ → ư with a dropped ʔ"],
+    ["dʑyɐ2", "giuỳa", "yɐ → uya"],
+    ["ɗɪŋ1", "đinh", "ɪŋ → inh"],
+    ["kuæi1", "quay", "c + oay → quay"],
+    ["tʰʌʉ3", "thấu", "ʌʉ → âu"],
+    ["n̩6", "ừn", "syllabic n"],
+    ["m̩2", "ừm", "syllabic m"],
+  ])("%s → %s (%s)", (ipa, vi) => {
+    expect(ipaToVietnamese(ipa, "qingtian")).toBe(vi);
+  });
+
+  it("maps the eight Qingtian tones from their own contours", () => {
+    expect([1, 2, 3, 4, 5, 6, 7, 8].map((t) => ipaToVietnamese(`ma${t}`, "qingtian"))).toEqual(["ma", "mà", "má", "mã", "ma", "mà", "mạ", "mạ"]);
+  });
+
+  it("reads a Qingtian sentence", async () => {
+    expect(vietnameseLine((await transcribe("我冇錢", "qingtian")).tokens, "qingtian")).toBe("ững náo gì");
   });
 });
 
@@ -67,19 +94,22 @@ describe("placeTone", () => {
 
 describe("vietnameseLine", () => {
   it("reads the §1 sentences", async () => {
-    expect(vietnameseLine((await transcribe("你飯吃過冇")).tokens)).toBe("nhĩ và chỉ cụ não");
-    expect(vietnameseLine((await transcribe("我去米蘭？")).tokens)).toBe("ững chuỵ mễnh là?");
+    expect(vietnameseLine((await transcribe("你飯吃過冇", "wencheng")).tokens, "wencheng")).toBe("nhĩ và chỉ cụ não");
+    expect(vietnameseLine((await transcribe("我去米蘭？", "wencheng")).tokens, "wencheng")).toBe("ững chuỵ mễnh là?");
   });
 });
 
 describe("data coverage", () => {
-  it("every reading in wencheng.json becomes Vietnamese letters only", () => {
+  it.each([
+    ["wencheng", wencheng],
+    ["qingtian", qingtian],
+  ] as const)("every %s reading becomes Vietnamese letters only", (dialect, data) => {
     const letters = /^[a-zàáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ]+$/;
     const bad = new Set<string>();
-    for (const entry of Object.values((wencheng as WenchengData).chars)) {
+    for (const entry of Object.values((data as DialectData).chars)) {
       for (const group of [entry, ...(entry.alt ?? [])]) {
         for (const { ipa } of group.readings) {
-          const vi = ipaToVietnamese(ipa).normalize("NFC");
+          const vi = ipaToVietnamese(ipa, dialect).normalize("NFC");
           if (!letters.test(vi)) bad.add(`${ipa} → ${vi}`);
         }
       }

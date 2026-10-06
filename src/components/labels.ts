@@ -5,7 +5,11 @@ import type { LlmErrorKind } from "@/lib/llm";
 export const SOURCE_LABEL: Record<TokenSource, string> = {
   daxue: "Daxue · 文成大峃",
   wencheng: "Wencheng · 文成",
-  wenzhou: "Wenzhou · 温州 (non Wencheng)",
+  wenxi: "Wenxi · 青田温溪",
+  beishan: "Beishan · 青田北山",
+  qingtian: "Qingtian · 青田",
+  wenzhou: "Wenzhou città · 温州",
+  estimated: "Stimata da Wenzhou · non verificata",
   override: "Correzione manuale",
   phrase: "Frase verificata",
 };

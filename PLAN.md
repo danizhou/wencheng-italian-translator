@@ -222,6 +222,7 @@ Each phase ends with green tests and a demo.
 | **5. UI** | full page, precomputed examples, clickable alternatives, copy and PNG export | usable on mobile |
 | **6. Deploy** | `preview.yml` and `production.yml` workflows (§10); Playwright smoke test on the preview; README with instructions for data, overrides, keys and secrets | every PR gets a comment with the preview URL and a green smoke test; merging to `main` deploys to production |
 | **7. Audio** | §12 step 1: browser speech (Web Speech API) reads the Italian letters; "Ascolta" + slow mode + per-syllable play | works without a key or network; e2e test checks the spoken text and voice |
+| **8. Qingtian** | §13: second dialect from the MCPDict Qingtian tables, dialect picker, IPA rules for the Qingtian sounds | every Qingtian reading spells to Italian letters; e2e test switches dialect |
 
 ## 8. CLAUDE.md (created in phase 0)
 
@@ -415,3 +416,13 @@ Two different sounds: the **meme sound** (an Italian voice reading "gni va ci cu
    - Files: `public/audio/syllables/<ipa>.mp3`, `public/audio/phrases/<phrase>.mp3`, plus an index JSON.
    - Playback priority: recorded phrase → recorded syllables (crossfaded) → browser speech for the rest; a 🎙️ badge marks real recordings.
 3. **Optional:** BYOK cloud TTS for a nicer meme voice; a cloned voice (Qwen3-TTS) only with the speaker's consent and a backend, which this static site does not have.
+
+## 13. Qingtian dialect (青田話)
+
+- **Data:** `src/data/qingtian.json`, built by the same `scripts/build-data.ts` from three MCPDict tables, priority Wenxi (`青田溫溪.tsv`, ~3,600 chars, primary) > Beishan (`青田北山.tsv`, ~2,300) > Qingtian county (`青田.tsv`, ~1,000) > Wenzhou (`溫州.tsv`, shared fallback). About 2,300 of the ~6,000 characters come only from Wenzhou, but they are rare: weighted by Jun Da's character frequency list, the dialect's own tables cover ~97% of running text, the same as Wencheng.
+- **Register marks:** these tables put `-` (colloquial, 白讀) or `=` (literary, 文讀) after the tone. The parser strips them, lists the colloquial reading first and tags the gloss with 白讀 / 文讀.
+- **Config:** `src/lib/dialects.ts` (names, place for the prompt, credited table). The LLM prompt and the coverage retry name the chosen dialect; the shared examples are read with each dialect's tables. Each dialect's JSON is a lazy chunk, loaded on first use.
+- **Spelling of the new sounds** (`ita-rules.json`): ɓ → b, ɗ → d (implosives), x → h, ʔ at the end not written, ɿ alone → i, ʮ → u, ʉ → ü, ʌʉ / ɤʉ → eu, æ → è, œ → eu, ɐ / ʌ → a, ɪ → i, syllabic n̩ / m̩ → n / m.
+- **Estimated readings** (both dialects): for a character only Wenzhou has, `estimateFromFallback` picks the dialect reading most often paired with the same Wenzhou reading among the characters both tables share (source `estimated`, dashed in the UI, Wenzhou kept in `alt`). Leave-one-out on the shared characters, same Italian letters: Qingtian 77% vs 61% for the raw Wenzhou reading, Wencheng 70% vs 40%. No vote threshold: every threshold tried lowered accuracy. Pure Wenzhou fallback is left for ~130 characters per dialect. Estimated characters still trigger the LLM coverage retry.
+- **Vietnamese voice** (§12): `vi-rules.json` covers the Qingtian finals and initials (ɓ → b and ɗ → đ, which are implosive in Vietnamese too; x → kh; ɪŋ/iŋ → inh; final ʔ dropped). Tones are mapped per dialect, because the contours differ: Qingtian uses its own contours from the MCPDict county survey (青田YB: 1=445 2=21 3=454 4=343 5=33 6=22 7=42ʔ 8=31ʔ), with the checked tones 7/8 read as nặng. Vietnamese is only the closest-sounding voice, not a target language.
+- **Open:** a native speaker should check the prompt's vocabulary (it reuses Wenzhou-area examples), the Qingtian examples and the spellings above; corrections go in `overrides.json` under `qingtian`.

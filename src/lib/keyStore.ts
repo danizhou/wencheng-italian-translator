@@ -10,6 +10,7 @@ const LEGACY_ANTHROPIC_KEY = "wencheng.anthropicKey";
 const PROVIDER = "wencheng.provider";
 const modelName = (provider: ProviderId) => `wencheng.model.${provider}`;
 const NO_SAVE = "wencheng.doNotSaveKey";
+const DIALECT = "wencheng.dialect";
 
 function storage(): Storage | null {
   try {
@@ -59,4 +60,6 @@ export const keyStore = {
   saveProvider: (provider: ProviderId) => write(PROVIDER, provider),
   loadModel: (provider: ProviderId): string | null => read(modelName(provider)),
   saveModel: (provider: ProviderId, model: string) => write(modelName(provider), model),
+  loadDialect: (): string | null => read(DIALECT),
+  saveDialect: (dialect: string) => write(DIALECT, dialect),
 };

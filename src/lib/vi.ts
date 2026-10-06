@@ -1,4 +1,5 @@
 import rulesJson from "@/data/vi-rules.json";
+import type { DialectId } from "./dialects";
 import { splitTone } from "./ita";
 import type { Token } from "./segment";
 
@@ -9,11 +10,13 @@ import type { Token } from "./segment";
  */
 export interface ViRules {
   ignoredPrefixes: string[];
-  syllabicNasals: string[];
-  syllabicNasal: string;
+  ignoredSuffixes: string[];
+  /** Whole syllables that are only a nasal → their respelling */
+  syllabicNasals: Record<string, string>;
   initials: Record<string, string>;
   finals: Record<string, string>;
-  tones: Record<string, ToneName | "">;
+  /** Tone category → Vietnamese tone, per dialect (the contours differ) */
+  tones: Record<DialectId, Record<string, ToneName | "">>;
 }
 
 type ToneName = "huyen" | "sac" | "nga" | "nang" | "hoi";
@@ -81,16 +84,18 @@ function join(initial: string, rhyme: string): string {
 
 export function createIpaToVietnamese(rules: ViRules) {
   const initials = Object.keys(rules.initials).sort((a, b) => b.length - a.length);
-  const nasals = [...rules.syllabicNasals].sort((a, b) => b.length - a.length);
 
-  return function ipaToVietnamese(ipa: string): string {
+  return function ipaToVietnamese(ipa: string, dialect: DialectId): string {
     const { syllable: raw, tone } = splitTone(ipa);
-    const toneName = rules.tones[String(tone ?? 0)] ?? "";
-    if (nasals.some((n) => raw === n)) return placeTone(rules.syllabicNasal, toneName);
+    const toneName = rules.tones[dialect][String(tone ?? 0)] ?? "";
+    const nasal = rules.syllabicNasals[raw];
+    if (nasal) return placeTone(nasal, toneName);
 
     let syllable = raw;
     const prefix = rules.ignoredPrefixes.find((p) => syllable.startsWith(p));
     if (prefix) syllable = syllable.slice(prefix.length);
+    const suffix = rules.ignoredSuffixes.find((s) => syllable.length > s.length && syllable.endsWith(s));
+    if (suffix) syllable = syllable.slice(0, -suffix.length);
 
     const initial = initials.find((i) => syllable.startsWith(i));
     const final = syllable.slice(initial?.length ?? 0);
@@ -105,10 +110,10 @@ export const viRules = rulesJson as ViRules;
 export const ipaToVietnamese = createIpaToVietnamese(viRules);
 
 /** The sentence as a Vietnamese voice should read it: one word per syllable, punctuation kept. */
-export function vietnameseLine(tokens: Token[]): string {
+export function vietnameseLine(tokens: Token[], dialect: DialectId): string {
   let out = "";
   for (const t of tokens) {
-    const text = t.kind === "han" ? (t.ipa ? ipaToVietnamese(t.ipa) : "") : t.ita.trim();
+    const text = t.kind === "han" ? (t.ipa ? ipaToVietnamese(t.ipa, dialect) : "") : t.ita.trim();
     if (!text) continue;
     const attach = !out || (t.kind === "other" && /^[,.?!:;)"]/.test(text));
     out += (attach ? "" : " ") + text;

@@ -1,5 +1,5 @@
-import type { Reading, Source, WenchengData } from "./data-types";
-import wenchengJson from "@/data/wencheng.json";
+import type { DialectData, Reading, Source } from "./data-types";
+import type { DialectId } from "./dialects";
 import overridesJson from "@/data/overrides.json";
 import { toSimplified } from "./simplified";
 
@@ -20,6 +20,8 @@ export interface LookupResult {
   alts: SourcedReading[];
 }
 
+export type Lookup = (char: string) => LookupResult | null;
+
 /** "ȵi4" → { ipa: "ȵi4", tone: 4 } */
 export function parseIpa(ipa: string): Reading {
   const m = /^.+?([0-8])$/.exec(ipa.trim());
@@ -27,7 +29,7 @@ export function parseIpa(ipa: string): Reading {
   return { ipa: m[0], tone: Number(m[1]) };
 }
 
-export function createLookup(data: WenchengData, overrides: Overrides) {
+export function createLookup(data: DialectData, overrides: Overrides): Lookup {
   // Keyed by simplified form, so overrides.json may use either script
   const charOverrides = new Map(
     Object.entries(overrides.chars).map(([char, o]) => [
@@ -54,5 +56,20 @@ export function createLookup(data: WenchengData, overrides: Overrides) {
   };
 }
 
-export const overrides = overridesJson as Overrides;
-export const lookup = createLookup(wenchengJson as WenchengData, overrides);
+export const overrides = overridesJson as Record<DialectId, Overrides>;
+
+// Each table is ~800 KB, so it is loaded only when its dialect is first used.
+const DATA: Record<DialectId, () => Promise<{ default: unknown }>> = {
+  wencheng: () => import("@/data/wencheng.json"),
+  qingtian: () => import("@/data/qingtian.json"),
+};
+const lookups = new Map<DialectId, Promise<Lookup>>();
+
+export function loadLookup(dialect: DialectId): Promise<Lookup> {
+  let lookup = lookups.get(dialect);
+  if (!lookup) {
+    lookup = DATA[dialect]().then((m) => createLookup(m.default as DialectData, overrides[dialect]));
+    lookups.set(dialect, lookup);
+  }
+  return lookup;
+}
