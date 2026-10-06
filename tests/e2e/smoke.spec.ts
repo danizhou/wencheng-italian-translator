@@ -188,9 +188,9 @@ test("browses the ready-made phrases by category and search", async ({ page }) =
   await expect(list.getByRole("button", { name: /Hai mangiato\?/ })).toBeVisible();
 
   await page.getByRole("tab", { name: "Tutte" }).click();
-  await page.getByLabel("Cerca una frase").fill("nonna");
+  await page.getByLabel("Cerca una frase").fill("chiavi");
   await expect(list.getByRole("button")).toHaveCount(1);
-  await list.getByRole("button", { name: /Nonna!/ }).click();
+  await list.getByRole("button", { name: /Hai preso le chiavi\?/ }).click();
   await expect(page.getByRole("region", { name: "Risultato" })).toContainText("Da verificare");
   await expect(page.getByTestId("ita-line")).not.toBeEmpty();
 

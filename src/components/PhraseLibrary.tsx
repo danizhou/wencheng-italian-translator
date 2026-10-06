@@ -27,7 +27,7 @@ export function PhraseLibrary({ onPick, selectedId }: { onPick: (phrase: Phrase)
   );
 
   return (
-    <Card title="Frasi pronte" subtitle="Da usare con i nonni · funzionano senza chiave">
+    <Card title="Frasi pronte" subtitle="Frasi di tutti i giorni in casa · funzionano senza chiave">
       <div className="flex flex-col gap-4">
         <input
           type="search"

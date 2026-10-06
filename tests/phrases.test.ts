@@ -46,8 +46,14 @@ describe("phrase library", () => {
     expect(transcribePhrase(p).ita).toBe(ita);
   });
 
-  it("uses the colloquial readings picked for 再會 and 今日", () => {
-    expect(transcribePhrase(PHRASES.find((p) => p.id === "arrivederci")!).tokens.map((t) => t.ipa)).toEqual(["tɕe5", "vai6"]);
+  it("uses the readings picked for 今日 and 要緊", () => {
     expect(transcribePhrase(PHRASES.find((p) => p.id === "fa-freddo")!).tokens.slice(0, 2).map((t) => t.ipa)).toEqual(["ke1", "ne8"]);
+    expect(transcribePhrase(PHRASES.find((p) => p.id === "non-fa-niente")!).tokens.map((t) => t.ipa)).toEqual(["fɛ3", "ʔyø5", "tɕiaŋ3"]);
+  });
+
+  it("has no affectionate or greeting-card phrases", () => {
+    const categories = PHRASE_CATEGORIES.map((c) => c.id);
+    expect(categories).not.toContain("affetto");
+    expect(PHRASES.map((p) => p.it)).not.toContain("Ti voglio bene");
   });
 });

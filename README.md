@@ -6,7 +6,7 @@ Piano e fasi (in inglese): [PLAN.md](./PLAN.md).
 
 ## Come si usa
 
-1. Apri il sito e scegli una delle **frasi pronte** (una ventina, da usare con i nonni: saluti, affetto e salute, a tavola, in casa, il tempo). Puoi cercarle o filtrarle per categoria e funzionano anche senza chiave. Le frasi segnate "da verificare" sono state scritte senza un parlante di Wencheng: correggile in `src/data/phrases.json` quando le senti dire da qualcuno.
+1. Apri il sito e scegli una delle **frasi pronte**: una ventina di frasi di tutti i giorni in casa (a tavola, in casa, uscire e rientrare, il tempo, soldi e spesa, risposte veloci). Puoi cercarle o filtrarle per categoria e funzionano anche senza chiave. Le frasi segnate "da verificare" sono state scritte senza un parlante di Wencheng: correggile in `src/data/phrases.json` quando le senti dire da qualcuno.
 2. Per tradurre frasi nuove scegli un provider nel riquadro "Chiave API" e inserisci la tua API key:
    - **Anthropic (Claude)**: [console.anthropic.com](https://console.anthropic.com/settings/keys), modello predefinito Claude Haiku 4.5;
    - **OpenAI (GPT)**: [platform.openai.com](https://platform.openai.com/api-keys), modello predefinito GPT-5.4 nano;
